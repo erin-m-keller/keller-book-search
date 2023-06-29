@@ -1,30 +1,24 @@
-export const getSavedBookIds = () => {
-  const savedBookIds = localStorage.getItem('saved_books')
-    ? JSON.parse(localStorage.getItem('saved_books'))
-    : [];
+// retrieve the saved book IDs from localStorage or 
+// initialize with an empty array if it does not exist
+export const getSavedBookIds = () => JSON.parse(localStorage.getItem('bookList') || '[]');
 
-  return savedBookIds;
-};
+// save the provided book ID array to localStorage as 'bookList', 
+// or remove the item if the array is empty
+export const saveBookIds = (bookIdArr) =>
+  bookIdArr.length
+    ? localStorage.setItem('bookList', JSON.stringify(bookIdArr))
+    : localStorage.removeItem('bookList');
 
-export const saveBookIds = (bookIdArr) => {
-  if (bookIdArr.length) {
-    localStorage.setItem('saved_books', JSON.stringify(bookIdArr));
-  } else {
-    localStorage.removeItem('saved_books');
-  }
-};
-
+// remove the specified book ID from the saved book IDs in localStorage
 export const removeBookId = (bookId) => {
-  const savedBookIds = localStorage.getItem('saved_books')
-    ? JSON.parse(localStorage.getItem('saved_books'))
-    : null;
-
-  if (!savedBookIds) {
-    return false;
-  }
-
-  const updatedSavedBookIds = savedBookIds?.filter((savedBookId) => savedBookId !== bookId);
-  localStorage.setItem('saved_books', JSON.stringify(updatedSavedBookIds));
-
+  // retrieve the saved book IDs from localStorage or initialize as null if it does not exist
+  const savedBookIds = JSON.parse(localStorage.getItem('bookList') || 'null');
+  // if savedBookIds is null, return false
+  if (!savedBookIds) return false;
+  // filter out the specified book ID from the saved book IDs array
+  const updatedSavedBookIds = savedBookIds.filter((savedBookId) => savedBookId !== bookId);
+  // save the updated saved book IDs array to localStorage as 'bookList'
+  localStorage.setItem('bookList', JSON.stringify(updatedSavedBookIds));
+  // return true to indicate successful removal
   return true;
 };
