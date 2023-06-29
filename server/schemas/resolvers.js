@@ -29,6 +29,13 @@ const resolvers = {
       // new: true returns the updated object
       return await User.findByIdAndUpdate(userId, { $push: { savedBooks: bookData } }, { new: true });
     },
+    removeBook: async (_, { bookId }, { userId }) => {
+      // if no userid, throw an error
+      if (!userId) throw new Error('Not authenticated.');
+      // find user by id, and remove the book from the savedBooks array
+      // new: true returns the updated object
+      return await User.findByIdAndUpdate(userId, { $pull: { savedBooks: { bookId } } }, { new: true });
+    },
   },
 };
 
