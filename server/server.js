@@ -1,3 +1,6 @@
+// load environment variables into the application
+require('dotenv').config();
+
 // initialize variables
 const express = require('express'),
       { ApolloServer } = require('apollo-server-express'),
@@ -8,7 +11,7 @@ const express = require('express'),
         typeDefs,
         resolvers
       }),
-      app = express(); 
+      app = express();
 
 // configuring Express to parse URL-encoded data
 app.use(express.urlencoded({ extended: false })); 
