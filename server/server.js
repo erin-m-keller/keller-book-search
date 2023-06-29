@@ -1,34 +1,36 @@
-const express = require('express');
-// Import the ApolloServer class
-const { ApolloServer } = require('apollo-server-express');
+// initialize variables
+const express = require('express'),
+      { ApolloServer } = require('apollo-server-express'),
+      { typeDefs, resolvers } = require('./schemas'),
+      db = require('./config/connection'),
+      PORT = process.env.PORT || 3001,
+      server = new ApolloServer({
+        typeDefs,
+        resolvers
+      }),
+      app = express(); 
 
-// Import the two parts of a GraphQL schema
-const { typeDefs, resolvers } = require('./schemas');
-const db = require('./config/connection');
+// configuring Express to parse URL-encoded data
+app.use(express.urlencoded({ extended: false })); 
+// configuring Express to parse JSON data
+app.use(express.json()); 
 
-const PORT = process.env.PORT || 3001;
-const server = new ApolloServer({
-  typeDefs,
-  resolvers
-});
-
-const app = express();
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
-
-// Create a new instance of an Apollo server with the GraphQL schema
+// create a new instance of an Apollo server with the GraphQL schema
 const startApolloServer = async () => {
-await server.start();
-server.applyMiddleware({ app });
+  // starting the ApolloServer
+  await server.start(); 
+  // applying the Apollo middleware to the Express app
+  server.applyMiddleware({ app }); 
 
-db.once('open', () => {
-  app.listen(PORT, () => {
-    console.log(`API server running on port ${PORT}!`);
-    console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`);
-  })
-})
+  // once the database connection is open
+  db.once('open', () => { 
+    // start the server and listen on the specified port
+    app.listen(PORT, () => { 
+      console.log(`API server running on port ${PORT}!`); 
+      console.log(`Use GraphQL at http://localhost:${PORT}${server.graphqlPath}`); 
+    });
+  });
 };
 
-// Call the async function to start the server
+// call the async function to start the server
 startApolloServer();
