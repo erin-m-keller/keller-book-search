@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken"),
 
 module.exports = {
   // function to sign a token with the provided payload, secret, and expiration
-  signToken: ({ username, email, _id }) => 
+  generateAuthToken: ({ username, email, _id }) => 
     jwt.sign({ data: { username, email, _id } }, secret, { expiresIn: expiration }), 
   // function to extract and verify a token from the request, assigning the decoded 
   // user data to the req.user property if the token is valid

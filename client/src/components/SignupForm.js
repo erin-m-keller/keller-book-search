@@ -1,53 +1,50 @@
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-
-import { createUser } from '../utils/API';
+import { useMutation } from '@apollo/react-hooks';
+import { CREATE_USER } from '../utils/mutations';
 import Auth from '../utils/auth';
 
 const SignupForm = () => {
-  // set initial form state
-  const [userFormData, setUserFormData] = useState({ username: '', email: '', password: '' });
-  // set state for form validation
-  const [validated] = useState(false);
-  // set state for alert
-  const [showAlert, setShowAlert] = useState(false);
+// initialize variables
+const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+const [validated] = useState(false);
+const [showAlert, setShowAlert] = useState(false);
+const [createUser, { error }] = useMutation(CREATE_USER);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setUserFormData({ ...userFormData, [name]: value });
-  };
-
-  const handleFormSubmit = async (event) => {
+// handle input change event
+const handleInputChange = (event) => {
+  const { name, value } = event.target;
+  setFormData({ ...formData, [name]: value });
+};
+// handle form submission event
+const handleFormSubmit = async (event) => {
+  // prevent default behavior
+  event.preventDefault();
+  // initialize variables
+  const form = event.currentTarget;
+  // check form validity
+  if (form.checkValidity() === false) {
     event.preventDefault();
-
-    // check if form has everything (as per react-bootstrap docs)
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    try {
-      const response = await createUser(userFormData);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
-    } catch (err) {
-      console.error(err);
-      setShowAlert(true);
-    }
-
-    setUserFormData({
-      username: '',
-      email: '',
-      password: '',
-    });
-  };
+    event.stopPropagation();
+  }
+  try {
+    // perform createUser mutation with form data
+    const { data } = await createUser({ variables: { ...formData } });
+    console.log("data: " + JSON.stringify(data));
+    console.log("data.createUser.token: " + data.createUser.token);
+    // login user with received token
+    //Auth.login(data.createUser.token);
+  } catch (err) {
+    // log error
+    console.error("Try/Catch Error: " + err);
+    // log mutation error
+    console.error("Mutation error: " + error);
+    // show error
+    setShowAlert(true);
+  }
+  // reset form data
+  setFormData({ username: '', email: '', password: '' });
+};
 
   return (
     <>
@@ -65,7 +62,7 @@ const SignupForm = () => {
             placeholder='Your username'
             name='username'
             onChange={handleInputChange}
-            value={userFormData.username}
+            value={formData.username}
             required
           />
           <Form.Control.Feedback type='invalid'>Username is required!</Form.Control.Feedback>
@@ -78,7 +75,7 @@ const SignupForm = () => {
             placeholder='Your email address'
             name='email'
             onChange={handleInputChange}
-            value={userFormData.email}
+            value={formData.email}
             required
           />
           <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
@@ -91,13 +88,13 @@ const SignupForm = () => {
             placeholder='Your password'
             name='password'
             onChange={handleInputChange}
-            value={userFormData.password}
+            value={formData.password}
             required
           />
           <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
         </Form.Group>
         <Button
-          disabled={!(userFormData.username && userFormData.email && userFormData.password)}
+          disabled={!(formData.username && formData.email && formData.password)}
           type='submit'
           variant='success'>
           Submit

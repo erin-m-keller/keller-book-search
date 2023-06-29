@@ -1,5 +1,6 @@
 // initialize variables
 const { User } = require('../models');
+const { generateAuthToken } = require("../utils/auth");
 
 const resolvers = {
   // retrieve data from the server
@@ -15,11 +16,12 @@ const resolvers = {
   // modify data on the server
   Mutation: {
     // create a new user on sign up
-    createUser: async (_, { input }) => {
+    createUser: async (_,input) => {
       // initialize variables
-      const { username, email, password } = input;
-      // create the user with username, email, and password
-      return await User.create({ username, email, password });
+      const user = await User.create(input),
+            token = generateAuthToken(user);
+      // return token and user object
+      return { token, user };
     },
     // authenticate the user
     login: async (_, { email, password }) => {
@@ -30,7 +32,7 @@ const resolvers = {
         throw new AuthenticationError("Incorrect credentials.");
       }
       // generate a token for the authenticated user
-      const token = signToken(user);
+      const token = generateAuthToken(user);
       // return the token and user object
       return { token, user };
     },
