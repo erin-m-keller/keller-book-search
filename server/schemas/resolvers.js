@@ -8,8 +8,8 @@ const resolvers = {
     getUser: async (_, __, { userId }) => {
       // if no userid, throw an error
       if (!userId) throw new Error('Not authenticated.');
-      // otherwise, find the user by ID and return
-      return await User.findById(userId);
+      // otherwise, find the user by ID and return, excluding v and password
+      return await User.findById(userId).select("-__v -password");
     },
   },
   // modify data on the server

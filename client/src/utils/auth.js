@@ -1,49 +1,37 @@
-// use this to decode a token and get the user's information out of it
+// initialize variables
 import decode from 'jwt-decode';
 
-// create a new class to instantiate for a user
 class AuthService {
-  // get user data
-  getProfile() {
-    return decode(this.getToken());
-  }
-
-  // check if user's logged in
-  loggedIn() {
-    // Checks if there is a saved token and it's still valid
+  // get user profile data from decoded token
+  getProfile = () => decode(this.getToken());
+  // check if the user is logged in
+  loggedIn = () => {
     const token = this.getToken();
-    return !!token && !this.isTokenExpired(token); // handwaiving here
-  }
-
-  // check if token is expired
-  isTokenExpired(token) {
+    return !!token && !this.isTokenExpired(token);
+  };
+  // check if the token is expired
+  isTokenExpired = (token) => {
     try {
       const decoded = decode(token);
-      if (decoded.exp < Date.now() / 1000) {
-        return true;
-      } else return false;
+      return decoded.exp < Date.now() / 1000;
     } catch (err) {
       return false;
     }
-  }
-
-  getToken() {
-    // Retrieves the user token from localStorage
-    return localStorage.getItem('id_token');
-  }
-
-  login(idToken) {
-    // Saves user token to localStorage
+  };
+  // get the user token from localStorage
+  getToken = () => localStorage.getItem('id_token');
+  // save user token to localStorage and redirect to homepage
+  login = (idToken) => {
     localStorage.setItem('id_token', idToken);
     window.location.assign('/');
-  }
-
-  logout() {
-    // Clear user token and profile data from localStorage
+  };
+  // remove user token from localStorage and redirect to homepage
+  logout = () => {
     localStorage.removeItem('id_token');
-    // this will reload the page and reset the state of the application
     window.location.assign('/');
-  }
+  };
 }
-
-export default new AuthService();
+// create an instance of the AuthService
+const authService = new AuthService(); 
+// export the auth service
+export default authService; 
