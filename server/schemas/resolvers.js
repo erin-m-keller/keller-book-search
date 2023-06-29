@@ -1,5 +1,5 @@
 // initialize variables
-const { Class } = require('../models');
+const { User } = require('../models');
 
 const resolvers = {
   // retrieve data from the server
@@ -20,6 +20,19 @@ const resolvers = {
       const { username, email, password } = input;
       // create the user with username, email, and password
       return await User.create({ username, email, password });
+    },
+    // authenticate the user
+    login: async (_, { email, password }) => {
+      // initialize variables
+      const user = await User.findOne({ email });
+      // if user is not found, or password is incorrect, throw an error
+      if (!user || !(await user.isCorrectPassword(password))) {
+        throw new AuthenticationError("Incorrect credentials.");
+      }
+      // generate a token for the authenticated user
+      const token = signToken(user);
+      // return the token and user object
+      return { token, user };
     },
     // save the book to the users savedBooks array
     saveBook: async (_, { bookData }, { userId }) => {
