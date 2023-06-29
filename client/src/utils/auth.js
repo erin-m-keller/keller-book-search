@@ -19,15 +19,15 @@ class AuthService {
     }
   };
   // get the user token from localStorage
-  getToken = () => localStorage.getItem('id_token');
+  getToken = () => localStorage.getItem('jwtToken');
   // save user token to localStorage and redirect to homepage
   login = (idToken) => {
-    localStorage.setItem('id_token', idToken);
+    localStorage.setItem('jwtToken', idToken);
     window.location.assign('/');
   };
   // remove user token from localStorage and redirect to homepage
   logout = () => {
-    localStorage.removeItem('id_token');
+    localStorage.removeItem('jwtToken');
     window.location.assign('/');
   };
 }
