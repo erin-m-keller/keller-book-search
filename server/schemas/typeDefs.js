@@ -1,6 +1,7 @@
 // initialize variables
 const { gql } = require('apollo-server-express');
 
+// define the GraphQL type definitions
 const typeDefs = gql`
   type Book {
     authors: [String]
