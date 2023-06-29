@@ -2,9 +2,9 @@ const { Class } = require('../models');
 
 const resolvers = {
   Query: {
-    classes: async () => {
-      return await Class.find({});
-    }
+    // classes: async () => {
+    //   return await Class.find({});
+    // }
   }
 };
 
