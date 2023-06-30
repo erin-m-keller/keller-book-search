@@ -13,9 +13,12 @@ const [createUser, { error }] = useMutation(CREATE_USER);
 
 // handle input change event
 const handleInputChange = (event) => {
+  // initialize variables
   const { name, value } = event.target;
+  // update the user form data with the new value
   setFormData({ ...formData, [name]: value });
 };
+
 // handle form submission event
 const handleFormSubmit = async (event) => {
   // prevent default behavior
@@ -24,16 +27,16 @@ const handleFormSubmit = async (event) => {
   const form = event.currentTarget;
   // check form validity
   if (form.checkValidity() === false) {
+    // prevent default behavior
     event.preventDefault();
+    // stop the event propagation
     event.stopPropagation();
   }
   try {
     // perform createUser mutation with form data
     const { data } = await createUser({ variables: { ...formData } });
-    console.log("data: " + JSON.stringify(data));
-    console.log("data.createUser.token: " + data.createUser.token);
     // login user with received token
-    //Auth.login(data.createUser.token);
+    Auth.login(data.createUser.token);
   } catch (err) {
     // log error
     console.error("Try/Catch Error: " + err);

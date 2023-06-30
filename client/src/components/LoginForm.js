@@ -1,50 +1,51 @@
 // see SignupForm.js for comments
 import React, { useState } from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
-
-import { loginUser } from '../utils/API';
+import { useMutation } from "@apollo/react-hooks";
+import { LOGIN_USER } from "../utils/mutations";
 import Auth from '../utils/auth';
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
   const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
+  const [login, { error }] = useMutation(LOGIN_USER);
 
+  // handle input change event
   const handleInputChange = (event) => {
+    // initialize variables
     const { name, value } = event.target;
+    // update the user form data with the new value
     setUserFormData({ ...userFormData, [name]: value });
   };
-
+  
+  // handle form submission event
   const handleFormSubmit = async (event) => {
+    // prevent default behavior
     event.preventDefault();
-
-    // check if form has everything (as per react-bootstrap docs)
+    // get the form element
     const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
+    // check if the form is valid
+    if (!form.checkValidity()) {
+      // stop the event propagation and return if the form is invalid
       event.stopPropagation();
+      return;
     }
-
     try {
-      const response = await loginUser(userFormData);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { token, user } = await response.json();
-      console.log(user);
-      Auth.login(token);
+      // perform the login mutation with the user form data
+      const { data } = await login({ variables: { ...userFormData } });
+      // login the user with the received token
+      Auth.login(data.login.token);
     } catch (err) {
-      console.error(err);
+      // log the error
+      console.error("Try/Catch Error: " + JSON.stringify(err));
+      // log the mutation error
+      console.error("Mutation error: " + error);
+      // show the alert for displaying the error
       setShowAlert(true);
     }
-
-    setUserFormData({
-      username: '',
-      email: '',
-      password: '',
-    });
+    // reset the user form data
+    setUserFormData({ email: "", password: "" });
   };
 
   return (
