@@ -4,6 +4,17 @@
 
 The Book Search Engine is a web application that demonstrates the importance of data and user demands in modern website development. It refactors a Google Books API search engine from a RESTful API to a GraphQL API using Apollo Server, showcasing adaptability. Built with the MERN stack, it enables users to search for books with optimal performance and offers the ability to save book searches, catering to personalized user experiences.
 
+  ## Table of Contents
+  * [Technology Stack](#technology-stack)
+  * [User Story](#user-story)
+  * [Acceptance Criteria](#acceptance-criteria)
+  * [Installation](#installation)
+  * [Screenshot](#screenshot)
+  * [Deployed Page](#deployed-page)
+  * [License](#license)
+  * [Questions](#questions)
+
+
 ## Technology Stack
 
 ![html](https://img.shields.io/badge/-HTML5-61DAFB?color=red&style=flat)
@@ -77,6 +88,23 @@ THEN I am logged out of the site and presented with a menu with the options
  a submit button  
 ```
 
+## Installation
+  * Ensure you are running Node.js v16.  
+  * Clone the repository.
+  ```
+    git clone git@github.com:erin-m-keller/keller-book-search.git
+  ```
+  * Install the dependencies.
+  ```bash
+    npm i && npm run install
+  ```
+  * Start the application.
+  ```md
+    npm start
+  ```
+  > Application is available at: http://localhost:3000/
+  > GraphQL is available at: http://localhost:3001/graphql
+
 ## Screenshot
 
 // TODO: add screenshot
@@ -88,3 +116,8 @@ THEN I am logged out of the site and presented with a menu with the options
 ## License
 
 [![MIT license](https://img.shields.io/badge/License-MIT-purple.svg)](https://lbesson.mit-license.org/)
+
+## Questions
+
+If you have any questions about this project, please contact me directly at [aestheticartist@gmail.com](aestheticartist@gmail.com).  
+You can view more of my projects [here](https://github.com/erin-m-keller).

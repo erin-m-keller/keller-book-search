@@ -28,14 +28,26 @@ const SavedBooks = () => {
   let userData = data?.getUser;
 
   useEffect(() => {
-    if (!loading && !dataErr && !userData) {
-      const cacheKey = client.cache.identify({ __typename: 'User', email });
-      const cachedData = client.cache.readFragment({ id: cacheKey, fragment: GET_USER });
-      userData = cachedData?.getUser;
-    }
-  }, [loading, dataErr, userData, client.cache, email]);
+    const fetchDataFromCache = async () => {
+      try {
+        // Restore cache from local storage
+        await client.cache.restore();
 
-  console.log("cached data:", userData);
+        // Read data from the cache
+        const cachedData = client.cache.readQuery({
+          query: GET_USER,
+          variables: { email },
+        });
+
+        // Update the user data if available in the cache
+        userData = cachedData?.getUser;
+        console.log(userData);
+      } catch (error) {
+        console.error('Error while restoring cache:', error);
+      }
+    };
+    fetchDataFromCache();
+  }, [client, email]);
 
   const handleRemoveBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
