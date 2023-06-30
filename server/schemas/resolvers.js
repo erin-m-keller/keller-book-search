@@ -1,17 +1,15 @@
 // initialize variables
-const { User } = require('../models');
-const { generateAuthToken } = require("../utils/auth");
-const { ObjectId } = require('mongodb');
+const { User } = require('../models'),
+      { generateAuthToken } = require("../utils/auth"),
+      { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
   // retrieve data from the server
   Query: {
-    // get the user
-    getUser: async (_, __, { userId }) => {
-      // if no userid, throw an error
-      if (!userId) throw new Error('Not authenticated.');
-      // otherwise, find the user by ID and return, excluding v and password
-      return await User.findById(userId).select("-__v -password");
+    getUser: async (_, __, context) => {
+      if (!context.user) throw new AuthenticationError("Not logged in");
+      const { email } = context.user;
+      return await User.findOne({ email }).select("-__v -password");
     },
   },
   // modify data on the server

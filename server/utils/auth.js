@@ -1,7 +1,7 @@
 // initialize variables
 const jwt = require("jsonwebtoken"),
       secret = process.env.SECRET,
-      expiration = "200h";
+      expiration = "5h";
 
 module.exports = {
   // function to sign a token with the provided payload, secret, and expiration
