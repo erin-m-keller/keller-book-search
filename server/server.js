@@ -7,9 +7,11 @@ const express = require('express'),
       { typeDefs, resolvers } = require('./schemas'),
       db = require('./config/connection'),
       PORT = process.env.PORT || 3001,
+      { authMiddleware } = require('./utils/auth'),
       server = new ApolloServer({
         typeDefs,
-        resolvers
+        resolvers,
+        context: authMiddleware
       }),
       app = express();
 

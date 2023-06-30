@@ -1,6 +1,7 @@
 // initialize variables
 const { User } = require('../models');
 const { generateAuthToken } = require("../utils/auth");
+const { ObjectId } = require('mongodb');
 
 const resolvers = {
   // retrieve data from the server
@@ -37,12 +38,12 @@ const resolvers = {
       return { token, user };
     },
     // save the book to the users savedBooks array
-    saveBook: async (_, { bookData }, { userId }) => {
-      // if no userid, throw an error
-      if (!userId) throw new Error('Not authenticated.');
+    saveBook: async (_, { bookData }, context) => {
+      // if no user, throw an error
+      if (!context.user) throw new Error('Not authenticated.');
       // find user by id, and push the book to the savedBooks array
       // new: true returns the updated object
-      return await User.findByIdAndUpdate(userId, { $push: { savedBooks: bookData } }, { new: true });
+      return await User.findByIdAndUpdate({ _id: context.user._id }, { $push: { savedBooks: bookData } }, { new: true });
     },
     removeBook: async (_, { bookId }, { userId }) => {
       // if no userid, throw an error
