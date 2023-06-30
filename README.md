@@ -102,7 +102,7 @@ THEN I am logged out of the site and presented with a menu with the options
   ```md
     npm start
   ```
-  > Application is available at: http://localhost:3000/
+  > Application is available at: http://localhost:3000/  
   > GraphQL is available at: http://localhost:3001/graphql
 
 ## Screenshot
