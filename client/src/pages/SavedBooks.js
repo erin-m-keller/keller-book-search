@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useApolloClient } from "@apollo/client";
+import React, { useEffect, useState } from 'react';
+import { useApolloClient, gql } from "@apollo/client";
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { GET_USER } from "../utils/queries";
 import { REMOVE_BOOK } from "../utils/mutations";
@@ -14,8 +14,7 @@ import {
 } from 'react-bootstrap';
 
 const SavedBooks = () => {
-  const client = useApolloClient(),
-        email = Auth.getProfile(),
+  const email = Auth.getProfile(),
         { loading, dataErr, data } = useQuery(GET_USER, {
           variables: { email },
           context: {
@@ -24,30 +23,48 @@ const SavedBooks = () => {
             }
           }
         }),
-        [removeBook, { error }] = useMutation(REMOVE_BOOK);
-  let userData = data?.getUser;
+        [removeBook, { error }] = useMutation(REMOVE_BOOK),
+        [userData, setUserData] = useState(null),
+        [userKey, setUserKey] = useState(null),
+        apolloClient = useApolloClient();
 
   useEffect(() => {
-    const fetchDataFromCache = async () => {
-      try {
-        // Restore cache from local storage
-        await client.cache.restore();
-
-        // Read data from the cache
-        const cachedData = client.cache.readQuery({
-          query: GET_USER,
-          variables: { email },
-        });
-
-        // Update the user data if available in the cache
-        userData = cachedData?.getUser;
-        console.log(userData);
-      } catch (error) {
-        console.error('Error while restoring cache:', error);
+    if (data) {
+      setUserData(data.getUser);
+    } else {
+      let savedUserData = JSON.parse(localStorage.getItem("apollo-cache-persist"));
+      for (let [user, _] of Object.entries(savedUserData)) {
+        if (user.includes("User")) {
+          setUserKey(user);
+          if (userKey) {
+            let user = apolloClient.readFragment({
+              id: userKey,
+              fragment: gql`
+                fragment UserFragment on User {
+                  __typename
+                  _id
+                  username
+                  email
+                  bookCount
+                  savedBooks {
+                    __typename
+                    bookId
+                    authors
+                    title
+                    description
+                    image
+                    link
+                  }
+                }
+              `,
+            });
+            setUserData(user);
+          }
+          return;
+        }
       }
-    };
-    fetchDataFromCache();
-  }, [client, email]);
+    }
+  }, [data, userKey]);
 
   const handleRemoveBook = async (bookId) => {
     const token = Auth.loggedIn() ? Auth.getToken() : null;
@@ -62,7 +79,7 @@ const SavedBooks = () => {
     }
   };
 
-  if (loading) {
+  if (loading && !userData) {
     return <div>Loading...</div>;
   }
   

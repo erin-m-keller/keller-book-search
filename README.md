@@ -96,7 +96,7 @@ THEN I am logged out of the site and presented with a menu with the options
   ```
   * Install the dependencies.
   ```bash
-    npm i && npm run install
+    npm i 
   ```
   * Start the application.
   ```md
