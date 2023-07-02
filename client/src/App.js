@@ -7,15 +7,34 @@ import SavedBooks from './pages/SavedBooks';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 
-// set up your cache.
-const cache = new InMemoryCache();
+// custom merge function for the savedBooks field
+const mergeSavedBooks = (_, incoming) => {
+  return incoming;
+};
 
+// set up cache with the custom merge function
+const cache = new InMemoryCache({
+  typePolicies: {
+    User: {
+      fields: {
+        savedBooks: {
+          merge: mergeSavedBooks
+        }
+      }
+    }
+  }
+});
+
+// persist the Apollo cache to local storage
 async function persistApolloCache() {
+  // specify the cache instance and use window.localStorage as the storage medium
   await persistCache({
-    cache,
-    storage: window.localStorage,
+    cache,                            
+    storage: window.localStorage,   
   });
 }
+
+// call function to persist the cache
 persistApolloCache();
 
 const client = new ApolloClient({

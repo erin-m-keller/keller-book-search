@@ -6,9 +6,13 @@ const { User } = require('../models'),
 const resolvers = {
   // retrieve data from the server
   Query: {
+    // retrieve user data
     getUser: async (_, __, context) => {
+      // if no user object, throw authentication error
       if (!context.user) throw new AuthenticationError("Not logged in");
+      // initialize variables
       const { email } = context.user;
+      // return a user object based on email, removing the __v and password fields from the object
       return await User.findOne({ email }).select("-__v -password");
     },
   },
@@ -26,7 +30,7 @@ const resolvers = {
     login: async (_, { email, password }) => {
       // initialize variables
       const user = await User.findOne({ email });
-      // if user is not found, or password is incorrect, throw an error
+      // if user is not found, or password is incorrect, throw an authentication error
       if (!user || !(await user.isCorrectPassword(password))) {
         throw new AuthenticationError("Incorrect credentials.");
       }
@@ -37,18 +41,33 @@ const resolvers = {
     },
     // save the book to the users savedBooks array
     saveBook: async (_, { bookData }, context) => {
-      // if no user, throw an error
+      // if no user object, throw authentication error
       if (!context.user) throw new Error('Not authenticated.');
-      // find user by id, and push the book to the savedBooks array
+      // find user by id
+      // push the book to the savedBooks array
       // new: true returns the updated object
-      return await User.findByIdAndUpdate({ _id: context.user._id }, { $push: { savedBooks: bookData } }, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(
+        context.user._id,
+        { $push: { savedBooks: bookData } },
+        { new: true }
+      );
+      return updatedUser;
     },
-    removeBook: async (_, { bookId }, { userId }) => {
-      // if no userid, throw an error
-      if (!userId) throw new Error('Not authenticated.');
-      // find user by id, and remove the book from the savedBooks array
+    // remove a book from the user's savedBooks array
+    removeBook: async (_, { bookId }, context) => {
+      // if no user object, throw authentication error
+      if (!context.user) throw new Error('Not authenticated.');
+      // find the user by their ID
+      // remove the book from the savedBooks array
       // new: true returns the updated object
-      return await User.findByIdAndUpdate(userId, { $pull: { savedBooks: { bookId } } }, { new: true });
+      const updatedUser = await User.findByIdAndUpdate(
+        context.user._id,
+        { $pull: { savedBooks: { bookId } } },
+        { new: true }
+      );
+      // return the updated user object
+      console.log("updatedUser: ", JSON.stringify(updatedUser));
+      return updatedUser;
     },
   },
 };

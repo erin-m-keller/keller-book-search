@@ -4,7 +4,6 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { GET_USER } from "../utils/queries";
 import { REMOVE_BOOK } from "../utils/mutations";
 import Auth from '../utils/auth';
-import { removeBookId } from '../utils/localStorage';
 import {
   Container,
   Card,
@@ -14,75 +13,121 @@ import {
 } from 'react-bootstrap';
 
 const SavedBooks = () => {
-  const email = Auth.getProfile(),
+  // initialize variables
+  const headers = {
+          headers: {
+            Authorization: `Bearer ${Auth.getToken()}`
+          }
+        },
+        email = Auth.getProfile(),
         { loading, dataErr, data } = useQuery(GET_USER, {
           variables: { email },
-          context: {
-            headers: {
-              Authorization: `Bearer ${Auth.getToken()}`
-            }
-          }
+          context: headers
         }),
         [removeBook, { error }] = useMutation(REMOVE_BOOK),
         [userData, setUserData] = useState(null),
         [userKey, setUserKey] = useState(null),
-        apolloClient = useApolloClient();
+        apolloClient = useApolloClient(),
+        cache = apolloClient.cache;
 
   useEffect(() => {
     if (data) {
       setUserData(data.getUser);
     } else {
       let savedUserData = JSON.parse(localStorage.getItem("apollo-cache-persist"));
-      for (let [user, _] of Object.entries(savedUserData)) {
-        if (user.includes("User")) {
-          setUserKey(user);
-          if (userKey) {
-            let user = apolloClient.readFragment({
-              id: userKey,
-              fragment: gql`
-                fragment UserFragment on User {
-                  __typename
-                  _id
-                  username
-                  email
-                  bookCount
-                  savedBooks {
+      if (savedUserData) {
+        for (let [user, _] of Object.entries(savedUserData)) {
+          if (user.includes("User")) {
+            setUserKey(user);
+            if (userKey) {
+              let user = apolloClient.readFragment({
+                id: userKey,
+                fragment: gql`
+                  fragment UserFragment on User {
                     __typename
-                    bookId
-                    authors
-                    title
-                    description
-                    image
-                    link
+                    _id
+                    username
+                    email
+                    bookCount
+                    savedBooks {
+                      __typename
+                      bookId
+                      authors
+                      title
+                      description
+                      image
+                      link
+                    }
                   }
-                }
-              `,
-            });
-            setUserData(user);
+                `,
+              });
+              setUserData(user);
+            }
+            return;
           }
-          return;
         }
       }
     }
   }, [data, userKey]);
 
-  const handleRemoveBook = async (bookId) => {
-    const token = Auth.loggedIn() ? Auth.getToken() : null;
-    if (!token) return false;
+  
+  const removeBookFromSavedBooks = async (bookId) => {
+    // initialize variables
+    const token = Auth.getToken();
+    // if token doesn't exist, return false 
+    if (!token) return false; 
     try {
-      await removeBook({ variables: { bookId } });
-      removeBookId(bookId);
-      window.location.reload();
+      // remove the book using the ID
+      let updatedObj = await removeBook({
+        variables: { bookId }, // set the bookId for the mutation
+        context: headers, // set the authorization headers
+      });
+      console.log("bookId: ", bookId);
+      // read the cache data for the current user
+      const { getUser } = cache.readQuery({ query: GET_USER, variables: { email } });
+      console.log("getUser: ", JSON.stringify(getUser));
+      // remove the book from the savedBooks array
+      const updatedUserData = {
+        ...getUser,
+        savedBooks: getUser.savedBooks.filter(book => book.bookId !== bookId),
+        bookCount: getUser.savedBooks.length - 1 
+      };
+      console.log("updatedUserData: ", JSON.stringify(updatedUserData));
+  
+      // Generate the cache key for the user object
+      const cacheKey = cache.identify({ __typename: "User", _id: getUser._id });
+
+      // Remove the user data from the cache
+      cache.evict({ id: cacheKey });
+  
+     // Write the modified user data back to the cache
+     cache.writeQuery({
+      query: GET_USER,
+      variables: { email },
+      data: {
+        getUser: {
+          ...updatedUserData
+        }
+      }
+    });
+  
+      // update the user data with the updated object
+      setUserData(updatedObj);
     } catch (err) {
-      console.error(err);
-      console.error(error);
+      // log any errors occurred during the mutation
+      console.error(err); 
+      // log the error variable
+      console.error(error); 
     }
   };
+  
 
+  // if loading is true and userData does not exist, show loading message
   if (loading && !userData) {
     return <div>Loading...</div>;
   }
   
+  // if useQuery has error, show error message
   if (dataErr) {
     return <div>Error: {dataErr.message}</div>;
   }
@@ -95,11 +140,9 @@ const SavedBooks = () => {
         </Container>
       </div>
       <Container>
-        <h2 className='pt-5'>
-          {userData && userData.savedBooks.length
-            ? `Viewing ${userData.savedBooks.length} saved ${userData.savedBooks.length === 1 ? 'book' : 'books'}:`
-            : 'You have no saved books!'}
-        </h2>
+      {userData && userData.savedBooks ?
+      <div>
+        <h2 className='pt-5'>Viewing {userData.savedBooks.length} saved {userData.savedBooks.length === 1 ? 'book' : 'books'}:</h2>
         <Row>
           {userData && userData.savedBooks.map((book, index) => {
             return (
@@ -110,7 +153,7 @@ const SavedBooks = () => {
                     <Card.Title>{book.title}</Card.Title>
                     <p className='small'>Authors: {book.authors}</p>
                     <Card.Text>{book.description}</Card.Text>
-                    <Button className='btn-block btn-danger' onClick={() => handleRemoveBook(book.bookId)}>
+                    <Button className='btn-block btn-danger' onClick={() => removeBookFromSavedBooks(book.bookId)}>
                       Delete this Book!
                     </Button>
                   </Card.Body>
@@ -119,6 +162,10 @@ const SavedBooks = () => {
             );
           })}
         </Row>
+      </div>
+      :
+      <h2 className='pt-5'>You have no saved books!</h2>
+      }
       </Container>
     </>
   );
