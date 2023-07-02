@@ -15,9 +15,44 @@ h6 {
   font-family: var(--font-main-style);
 }
 
+form {
+  padding: 1em;
+}
+
+.alert {
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  border-radius: 4px;
+  box-shadow: none;
+  background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 0));
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.43;
+  letter-spacing: 0.01071em;
+  background-color: rgb(245 1 87);
+  display: flex;
+  padding: 6px 16px;
+  color: rgb(255, 255, 255);
+}
+
 .small {
   font-weight: 300;
   font-style: italic;
+}
+
+.close-btn {
+  height: 2em;
+  width: 2em;
+  text-align: center;
+  font-size: 1.5em;
+  line-height: 2;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.close-btn:hover {
+  cursor: pointer;
 }
 
 .MuiBox-root {
@@ -104,4 +139,13 @@ h6 {
   letter-spacing: 0.0075em;
   -webkit-box-flex: 1;
   flex-grow: 1;
+}
+.MuiFormControl-root {
+  width: 100%;
+  padding: 0.5em;
+}
+.MuiButton-root {
+  background-color: #f50057 !important;
+  color: #FFF !important;
+  margin: 1em !important;
 }

@@ -1,9 +1,17 @@
 // see SignupForm.js for comments
 import React, { useState } from 'react';
-import { Form, Button, Alert } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 import { useMutation } from "@apollo/client";
 import { LOGIN_USER } from "../utils/mutations";
 import Auth from '../utils/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  TextField
+} from '@material-ui/core';
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
@@ -50,42 +58,36 @@ const LoginForm = () => {
 
   return (
     <>
-      <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
-        <Alert dismissible onClose={() => setShowAlert(false)} show={showAlert} variant='danger'>
-          Something went wrong with your login credentials!
-        </Alert>
-        <Form.Group className='mb-3'>
-          <Form.Label htmlFor='email'>Email</Form.Label>
-          <Form.Control
-            type='text'
-            placeholder='Your email'
-            name='email'
-            onChange={handleInputChange}
+<form noValidate validated={validated} onSubmit={handleFormSubmit}>
+        <FormControl>
+          <Alert show={showAlert} variant="filled" severity="error">
+            Something went wrong with your login credentials!
+            <div className="close-btn" onClick={() => setShowAlert(false)}>
+              <FontAwesomeIcon icon={faClose} />
+            </div>
+          </Alert>
+          <FormLabel>Enter Email:</FormLabel>
+          <TextField
+            type="email"
+            name="email"
             value={userFormData.email}
-            required
-          />
-          <Form.Control.Feedback type='invalid'>Email is required!</Form.Control.Feedback>
-        </Form.Group>
-
-        <Form.Group className='mb-3'>
-          <Form.Label htmlFor='password'>Password</Form.Label>
-          <Form.Control
-            type='password'
-            placeholder='Your password'
-            name='password'
             onChange={handleInputChange}
-            value={userFormData.password}
-            required
           />
-          <Form.Control.Feedback type='invalid'>Password is required!</Form.Control.Feedback>
-        </Form.Group>
-        <Button
-          disabled={!(userFormData.email && userFormData.password)}
-          type='submit'
-          variant='success'>
-          Submit
-        </Button>
-      </Form>
+          <FormLabel style={{ marginTop: "1em" }}>Enter Password:</FormLabel>
+          <TextField
+            type="password"
+            name="password"
+            value={userFormData.password}
+            onChange={handleInputChange}
+          />
+          <Button
+            type="submit"
+            disabled={!(userFormData.email && userFormData.password)}
+          >
+            Submit
+          </Button>
+        </FormControl>
+      </form>
     </>
   );
 };
