@@ -3,7 +3,7 @@ import { SAVE_BOOK } from '../utils/mutations.js';
 import { useMutation } from "@apollo/client";
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
-import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
+import { saveBookList, getBookList } from '../utils/localStorage';
 import {
   Container,
   Col,
@@ -22,15 +22,14 @@ const SearchBooks = () => {
         },
         [searchedBooks, setSearchedBooks] = useState([]),
         [searchInput, setSearchInput] = useState(''),
-        [savedBookIds, setSavedBookIds] = useState(getSavedBookIds()),
-        [saveBook, { error }] = useMutation(SAVE_BOOK);
+        [saveBook, { error }] = useMutation(SAVE_BOOK),
+        [bookList, setBookList] = useState(getBookList());
 
+  // runs code in response to certain events or 
+  // conditions, such as when the component mounts,
+  // updates, or unmounts
   useEffect(() => {
-    // cleanup function
-    return () => {
-      // save the `savedBookIds` state
-      saveBookIds(savedBookIds);
-    };
+    saveBookList(bookList);
   });
 
   // handle form submission event
@@ -86,18 +85,16 @@ const SearchBooks = () => {
         context: headers, // set the authorization headers 
       });
       // if there was an error, throw an error
-      if (!data) throw new Error('something went wrong!');
-      // access the saved book data from the response
-      const savedBookData = data.saveBook;
-      // if book successfully saves to user's account, save book id to state
-      setSavedBookIds([...savedBookIds, savedBookData.bookId]);
+      if (!data) throw new Error('something went wrong!'); 
+       // if book successfully saves to user's account, save book id to state
+       setBookList([...bookList, bookToSave.bookId]);
     } catch (err) {
       // log error
       console.error("Try/Catch Error: " + err);
       // log mutation error
       console.error("Mutation error: " + error);
     }
-  };
+  }
 
   return (
     <>
@@ -146,12 +143,12 @@ const SearchBooks = () => {
                     <Card.Text>{book.description}</Card.Text>
                     {Auth.loggedIn() && (
                       <Button
-                        disabled={savedBookIds?.some((savedBookId) => savedBookId === book.bookId)}
+                        disabled={bookList?.some((savedBookId) => savedBookId === book.bookId)}
                         className='btn-block btn-info'
                         onClick={() => handleSaveBook(book.bookId)}>
-                        {savedBookIds?.some((savedBookId) => savedBookId === book.bookId)
-                          ? 'This book has already been saved!'
-                          : 'Save this Book!'}
+                        {bookList?.some((savedBookId) => savedBookId === book.bookId)
+                          ? 'Already saved!'
+                          : 'Save'}
                       </Button>
                     )}
                   </Card.Body>

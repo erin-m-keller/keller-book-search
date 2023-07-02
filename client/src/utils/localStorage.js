@@ -1,10 +1,10 @@
 // retrieve the saved book IDs from localStorage or 
 // initialize with an empty array if it does not exist
-export const getSavedBookIds = () => JSON.parse(localStorage.getItem('activeUserBookList') || '[]');
+export const getBookList = () => JSON.parse(localStorage.getItem('activeUserBookList') || '[]');
 
 // save the provided book ID array to localStorage as 'activeUserBookList', 
 // or remove the item if the array is empty
-export const saveBookIds = (bookIdArr) =>
+export const saveBookList = (bookIdArr) =>
   bookIdArr.length
     ? localStorage.setItem('activeUserBookList', JSON.stringify(bookIdArr))
     : localStorage.removeItem('activeUserBookList');
