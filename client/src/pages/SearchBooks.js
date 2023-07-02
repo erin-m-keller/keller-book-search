@@ -8,10 +8,24 @@ import {
   Container,
   Col,
   Form,
-  Button,
   Card,
   Row
 } from 'react-bootstrap';
+
+import {
+  AppBar,
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Modal,
+  Tab,
+  Tabs,
+  Toolbar,
+  TextField,
+  Typography
+} from '@material-ui/core';
 
 const SearchBooks = () => {
   // initialize variables
@@ -98,10 +112,28 @@ const SearchBooks = () => {
 
   return (
     <>
-      <div className='text-light bg-dark pt-5'>
+      <div className='hero pt-5'>
         <Container>
-          <h1>Search for Books!</h1>
-          <Form onSubmit={handleFormSubmit}>
+          <Typography variant="h3">Search for Books!</Typography>
+          <FormControl>
+            <TextField 
+              id='filled-basic' 
+              label='Search' 
+              variant='filled' 
+              name='searchInput'
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              type='text'
+              size='lg'
+              placeholder='Search for a book'
+            />
+            <Button onClick={handleFormSubmit} disabled={!searchInput}>
+              Submit
+            </Button>
+          </FormControl>
+
+
+          {/* <Form onSubmit={handleFormSubmit}>
             <Row>
               <Col xs={12} md={8}>
                 <Form.Control
@@ -119,7 +151,7 @@ const SearchBooks = () => {
                 </Button>
               </Col>
             </Row>
-          </Form>
+          </Form> */}
         </Container>
       </div>
 
