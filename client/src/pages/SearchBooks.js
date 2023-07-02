@@ -4,25 +4,15 @@ import { useMutation } from "@apollo/client";
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
 import { saveBookList, getBookList } from '../utils/localStorage';
+import { Alert } from 'react-bootstrap';
 import {
-  Container,
-  Col,
-  Form,
-  Card,
-  Row
-} from 'react-bootstrap';
-
-import {
-  AppBar,
-  Box,
   Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
   FormControl,
-  FormLabel,
-  IconButton,
-  Modal,
-  Tab,
-  Tabs,
-  Toolbar,
+  Snackbar,
   TextField,
   Typography
 } from '@material-ui/core';
@@ -37,7 +27,8 @@ const SearchBooks = () => {
         [searchedBooks, setSearchedBooks] = useState([]),
         [searchInput, setSearchInput] = useState(''),
         [saveBook, { error }] = useMutation(SAVE_BOOK),
-        [bookList, setBookList] = useState(getBookList());
+        [bookList, setBookList] = useState(getBookList()),
+        [showSnack, setShowSnack] = useState(false);
 
   // runs code in response to certain events or 
   // conditions, such as when the component mounts,
@@ -102,6 +93,7 @@ const SearchBooks = () => {
       if (!data) throw new Error('something went wrong!'); 
        // if book successfully saves to user's account, save book id to state
        setBookList([...bookList, bookToSave.bookId]);
+       setShowSnack(true);
     } catch (err) {
       // log error
       console.error("Try/Catch Error: " + err);
@@ -113,7 +105,7 @@ const SearchBooks = () => {
   return (
     <>
       <div className='hero pt-5'>
-        <Container>
+        <div className="container">
           <Typography variant="h3">Search for Books!</Typography>
           <FormControl>
             <TextField 
@@ -131,65 +123,60 @@ const SearchBooks = () => {
               Submit
             </Button>
           </FormControl>
-
-
-          {/* <Form onSubmit={handleFormSubmit}>
-            <Row>
-              <Col xs={12} md={8}>
-                <Form.Control
-                  name='searchInput'
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  type='text'
-                  size='lg'
-                  placeholder='Search for a book'
-                />
-              </Col>
-              <Col xs={12} md={4}>
-                <Button type='submit' variant='success' size='lg'>
-                  Submit Search
-                </Button>
-              </Col>
-            </Row>
-          </Form> */}
-        </Container>
+        </div>
       </div>
-
-      <Container>
+      <div className="container">
         <h2 className='pt-5'>
           {searchedBooks.length
             ? `Viewing ${searchedBooks.length} results:`
             : 'Search for a book to begin'}
         </h2>
-        <Row>
+        <div className='card-wrapper'>
           {searchedBooks.map((book) => {
             return (
-              <Col md="4" key={book.bookId}>
-                <Card border='dark'>
-                  {book.image ? (
-                    <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
-                  ) : null}
-                  <Card.Body>
-                    <Card.Title>{book.title}</Card.Title>
-                    <p className='small'>Authors: {book.authors}</p>
-                    <Card.Text>{book.description}</Card.Text>
-                    {Auth.loggedIn() && (
-                      <Button
-                        disabled={bookList?.some((savedBookId) => savedBookId === book.bookId)}
-                        className='btn-block btn-info'
-                        onClick={() => handleSaveBook(book.bookId)}>
-                        {bookList?.some((savedBookId) => savedBookId === book.bookId)
-                          ? 'Already saved!'
-                          : 'Save'}
-                      </Button>
-                    )}
-                  </Card.Body>
-                </Card>
-              </Col>
+              <Card sx={{ maxWidth: 345 }} className='card-wrapper-item'>
+                <CardMedia
+                  sx={{ height: 140 }}
+                  image={book.image}
+                  title={`The cover for ${book.title}`}
+                />
+                <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {book.title}
+                  </Typography>
+                  <p className='small'>Authors: {book.authors}</p>
+                  <Typography variant="body2" color="text.secondary">
+                    {book.description}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                {Auth.loggedIn() && bookList?.some((savedBookId) => savedBookId === book.bookId) ? (
+                  <Alert variant="filled" severity="error">
+                    Already saved!
+                  </Alert>
+                ) : (
+                  <Button
+                    size="small"
+                    disabled={bookList?.some((savedBookId) => savedBookId === book.bookId)}
+                    className="btn-block btn-info"
+                    onClick={() => handleSaveBook(book.bookId)}
+                  >
+                    Save
+                  </Button>
+                )}
+              </CardActions>
+            </Card>
             );
           })}
-        </Row>
-      </Container>
+        </div>
+      </div>
+      <Snackbar
+        open={showSnack}
+        autoHideDuration={6000}
+        onClose={() => setShowSnack(false)}
+        message="Book saved to list!"
+      />
     </>
   );
 };
