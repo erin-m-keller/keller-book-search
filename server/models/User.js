@@ -1,57 +1,63 @@
-const { Schema, model } = require('mongoose');
-const bcrypt = require('bcrypt');
+// initialize variables
+const { Schema, model } = require('mongoose'),
+      bcrypt = require('bcrypt'),
+      bookSchema = require('./Book');
 
-// import schema from Book.js
-const bookSchema = require('./Book');
-
+// define the userSchema
 const userSchema = new Schema(
   {
+    // define the username field
     username: {
       type: String,
       required: true,
       unique: true,
     },
+    // define the email field
     email: {
       type: String,
       required: true,
       unique: true,
       match: [/.+@.+\..+/, 'Must use a valid email address'],
     },
+    // define the password field
     password: {
       type: String,
       required: true,
     },
-    // set savedBooks to be an array of data that adheres to the bookSchema
+    // define the savedBooks field as an array of data that adheres to the bookSchema
     savedBooks: [bookSchema],
   },
-  // set this to use virtual below
+  // define options for the schema
+  // include virtual properties when converting to JSON
   {
     toJSON: {
-      virtuals: true,
+      virtuals: true, 
     },
   }
 );
 
-// hash user password
+// middleware function to hash the user's password before saving to the database
 userSchema.pre('save', async function (next) {
   if (this.isNew || this.isModified('password')) {
-    const saltRounds = 10;
-    this.password = await bcrypt.hash(this.password, saltRounds);
+    const saltRounds = 10; // number of times the password hashing algorithm will be executed
+    this.password = await bcrypt.hash(this.password, saltRounds); // hash the password
   }
-
+  // pass control to the next middleware function in the stack
   next();
 });
 
-// custom method to compare and validate password for logging in
+// method to compare and validate the user's password during login
 userSchema.methods.isCorrectPassword = async function (password) {
-  return bcrypt.compare(password, this.password);
+  return bcrypt.compare(password, this.password); // cmpare the provided password with the hashed password
 };
 
-// when we query a user, we'll also get another field called `bookCount` with the number of saved books we have
+// virtual property to calculate and retrieve the number of saved books
 userSchema.virtual('bookCount').get(function () {
-  return this.savedBooks.length;
+  return this.savedBooks.length; // return the length of the savedBooks array
 });
 
+// create the User model using the userSchema
 const User = model('User', userSchema);
 
+// export the User model
 module.exports = User;
