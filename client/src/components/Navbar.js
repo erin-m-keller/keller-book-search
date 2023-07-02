@@ -4,7 +4,7 @@ import SignUpForm from './SignupForm';
 import LoginForm from './LoginForm';
 import Auth from '../utils/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook } from '@fortawesome/free-solid-svg-icons';
+import { faBook, faBookmark, faRightFromBracket, faSearch } from '@fortawesome/free-solid-svg-icons';
 import {
   AppBar,
   Box,
@@ -43,29 +43,31 @@ const AppNavbar = () => {
       <AppBar color="secondary">
         <Toolbar>
           <IconButton edge="start" aria-label="menu">
-            <FontAwesomeIcon icon={faBook} />
+            <FontAwesomeIcon icon={faBook} className="navigation-icon" />
           </IconButton>
           <Typography variant="h6">
             Google Book Search
           </Typography>
-          <IconButton>
+          <div className="navigation-link">
             <Link to='/'>
-                Search For Books
+              <FontAwesomeIcon icon={faSearch} />&nbsp;Search For Books
             </Link>
-          </IconButton>
-          <IconButton>
+          </div>
+          <div className="navigation-link">
             {/* if user is logged in show saved books and logout */}
             {Auth.loggedIn() ? (
               <>
-                <Link to='/saved'>
-                  See Your Books
-                </Link>
-                <Link onClick={Auth.logout}>Logout</Link>
+                <div className="navigation-link">
+                  <Link to='/saved'><FontAwesomeIcon icon={faBookmark} />&nbsp;Saved Books</Link>
+                </div>
+                <div className="navigation-link">
+                  <div onClick={Auth.logout}><FontAwesomeIcon icon={faRightFromBracket} />&nbsp;Logout</div>
+                </div>
               </>
             ) : (
-              <div onClick={handleOpen}>Login/Sign Up</div>
+              <div onClick={handleOpen}><FontAwesomeIcon icon={faRightFromBracket} />&nbsp;Login/Sign Up</div>
             )}
-          </IconButton>
+          </div>
         </Toolbar>
       </AppBar>
       <Toolbar />

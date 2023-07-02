@@ -15,7 +15,6 @@ import {
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
-  const [validated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [login, { error }] = useMutation(LOGIN_USER);
 
@@ -58,36 +57,31 @@ const LoginForm = () => {
 
   return (
     <>
-<form noValidate validated={validated} onSubmit={handleFormSubmit}>
-        <FormControl>
-          <Alert show={showAlert} variant="filled" severity="error">
-            Something went wrong with your login credentials!
-            <div className="close-btn" onClick={() => setShowAlert(false)}>
-              <FontAwesomeIcon icon={faClose} />
-            </div>
-          </Alert>
-          <FormLabel>Enter Email:</FormLabel>
-          <TextField
-            type="email"
-            name="email"
-            value={userFormData.email}
-            onChange={handleInputChange}
-          />
-          <FormLabel style={{ marginTop: "1em" }}>Enter Password:</FormLabel>
-          <TextField
-            type="password"
-            name="password"
-            value={userFormData.password}
-            onChange={handleInputChange}
-          />
-          <Button
-            type="submit"
-            disabled={!(userFormData.email && userFormData.password)}
-          >
-            Submit
-          </Button>
-        </FormControl>
-      </form>
+      <FormControl>
+        <Alert show={showAlert} variant="filled" severity="error">
+          Something went wrong with your login credentials!
+          <div className="close-btn" onClick={() => setShowAlert(false)}>
+            <FontAwesomeIcon icon={faClose} />
+          </div>
+        </Alert>
+        <FormLabel>Enter Email:</FormLabel>
+        <TextField
+          type="email"
+          name="email"
+          value={userFormData.email}
+          onChange={handleInputChange}
+        />
+        <FormLabel>Enter Password:</FormLabel>
+        <TextField
+          type="password"
+          name="password"
+          value={userFormData.password}
+          onChange={handleInputChange}
+        />
+        <Button onClick={handleFormSubmit} disabled={!(userFormData.email && userFormData.password)}>
+          Submit
+        </Button>
+      </FormControl>
     </>
   );
 };
