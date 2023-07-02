@@ -15,10 +15,15 @@ import {
 
 const SearchBooks = () => {
   // initialize variables
-  const [searchedBooks, setSearchedBooks] = useState([]);
-  const [searchInput, setSearchInput] = useState('');
-  const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
-  const [saveBook, { error }] = useMutation(SAVE_BOOK);
+  const headers = {
+          headers: {
+            Authorization: `Bearer ${Auth.getToken()}`
+          }
+        },
+        [searchedBooks, setSearchedBooks] = useState([]),
+        [searchInput, setSearchInput] = useState(''),
+        [savedBookIds, setSavedBookIds] = useState(getSavedBookIds()),
+        [saveBook, { error }] = useMutation(SAVE_BOOK);
 
   useEffect(() => {
     // cleanup function
@@ -76,7 +81,10 @@ const SearchBooks = () => {
         image: bookToSave.image,
         link: bookToSave.link
       },
-      { data } = await saveBook({ variables: { bookData } });
+      { data } = await saveBook({ 
+        variables: { bookData }, // set the bookData for the mutation
+        context: headers, // set the authorization headers 
+      });
       // if there was an error, throw an error
       if (!data) throw new Error('something went wrong!');
       // access the saved book data from the response
