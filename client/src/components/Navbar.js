@@ -1,73 +1,88 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, Container, Modal, Tab } from 'react-bootstrap';
 import SignUpForm from './SignupForm';
 import LoginForm from './LoginForm';
 import Auth from '../utils/auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBook } from '@fortawesome/free-solid-svg-icons';
+import {
+  AppBar,
+  Box,
+  Card,
+  IconButton,
+  Modal,
+  Tab,
+  Tabs,
+  Toolbar,
+  Typography
+} from '@material-ui/core';
 
 const AppNavbar = () => {
-  // set modal display state
-  const [showModal, setShowModal] = useState(false);
+  // initialize variables
+  const [open, setOpen] = useState(false); 
+  const [value, setValue] = useState('login');
 
+  // handle tab switch between login and sign up
+  const handleChange = (event, newValue) => {
+    event.preventDefault();
+    setValue(newValue);
+  };
+
+  // open login/signup modal
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  // close login/signup modal
+  const handleClose = () => {
+    setOpen(false);
+  };
+  
   return (
     <>
-      <Navbar bg='dark' variant='dark' expand='lg'>
-        <Container fluid>
-          <Navbar.Brand as={Link} to='/'>
-            Google Books Search
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls='navbar' />
-          <Navbar.Collapse id='navbar' className='d-flex flex-row-reverse'>
-            <Nav className='ml-auto d-flex'>
-              <Nav.Link as={Link} to='/'>
+      <AppBar color="secondary">
+        <Toolbar>
+          <IconButton edge="start" aria-label="menu">
+            <FontAwesomeIcon icon={faBook} />
+          </IconButton>
+          <Typography variant="h6">
+            Google Book Search
+          </Typography>
+          <IconButton>
+            <Link to='/'>
                 Search For Books
-              </Nav.Link>
-              {/* if user is logged in show saved books and logout */}
-              {Auth.loggedIn() ? (
-                <>
-                  <Nav.Link as={Link} to='/saved'>
-                    See Your Books
-                  </Nav.Link>
-                  <Nav.Link onClick={Auth.logout}>Logout</Nav.Link>
-                </>
-              ) : (
-                <Nav.Link onClick={() => setShowModal(true)}>Login/Sign Up</Nav.Link>
-              )}
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-      {/* set modal data up */}
-      <Modal
-        size='lg'
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        aria-labelledby='signup-modal'>
-        {/* tab container to do either signup or login component */}
-        <Tab.Container defaultActiveKey='login'>
-          <Modal.Header closeButton>
-            <Modal.Title id='signup-modal'>
-              <Nav variant='pills'>
-                <Nav.Item>
-                  <Nav.Link eventKey='login'>Login</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey='signup'>Sign Up</Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Tab.Content>
-              <Tab.Pane eventKey='login'>
-                <LoginForm handleModalClose={() => setShowModal(false)} />
-              </Tab.Pane>
-              <Tab.Pane eventKey='signup'>
-                <SignUpForm handleModalClose={() => setShowModal(false)} />
-              </Tab.Pane>
-            </Tab.Content>
-          </Modal.Body>
-        </Tab.Container>
+            </Link>
+          </IconButton>
+          <IconButton>
+            {/* if user is logged in show saved books and logout */}
+            {Auth.loggedIn() ? (
+              <>
+                <Link to='/saved'>
+                  See Your Books
+                </Link>
+                <Link onClick={Auth.logout}>Logout</Link>
+              </>
+            ) : (
+              <div onClick={handleOpen}>Login/Sign Up</div>
+            )}
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
+      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+        <Box>
+          <Tabs value={value} onChange={handleChange} textColor="secondary" indicatorColor="secondary" aria-label="Login or Sign Up">
+            <Tab value="login" label="Login" />
+            <Tab value="signup" label="Sign Up" />
+          </Tabs>
+          <Card variant="outlined">
+            {value === "login" ? (
+              <LoginForm />
+            ) : (
+              <SignUpForm />
+            )}
+          </Card>
+        </Box>
       </Modal>
     </>
   );

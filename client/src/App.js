@@ -1,11 +1,12 @@
 import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { persistCache } from 'apollo-cache-persist';
 import SearchBooks from './pages/SearchBooks';
 import SavedBooks from './pages/SavedBooks';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
+import { ThemeProvider, createTheme } from '@mui/system';
 
 // custom merge function for the savedBooks field
 const mergeSavedBooks = (_, incoming) => {
@@ -55,11 +56,15 @@ const client = new ApolloClient({
 // clear the Apollo Client cache
 client.clearStore();
 
+// create mui theme
+const theme = createTheme();
+
 function App() {
   return (
-    <ApolloProvider client={client}>
-      <Router>
-        <ErrorBoundary>
+    <ThemeProvider theme={theme}>
+      <ApolloProvider client={client}>
+        <Router>
+          {/* <ErrorBoundary> */}
             <>
               <Navbar />
               <Switch>
@@ -68,9 +73,10 @@ function App() {
                 <Route render={() => <h1 className='display-2'>Wrong page!</h1>} />
               </Switch>
             </>
-          </ErrorBoundary>
-      </Router>
-    </ApolloProvider>
+          {/* </ErrorBoundary> */}
+        </Router>
+      </ApolloProvider>
+    </ThemeProvider>
   );
 }
 
