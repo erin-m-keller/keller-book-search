@@ -15,7 +15,7 @@ class ErrorBoundary extends Component {
   componentDidCatch(error, info) {
     // error handling method called when an error is caught in the component tree
     console.error("componentDidCatch error: " + error);
-    console.log("componentDidCatch info: " + JSON.stringify(info));
+    console.info("componentDidCatch info: " + JSON.stringify(info));
     // update state to indicate that an error has occurred
     this.setState({ hasError: true });
   }

@@ -13,7 +13,6 @@ const resolvers = {
       // initialize variables
       const { email } = context.user;
       const user = await User.findOne({ email }).select("-__v -password");
-      console.log("user: ", JSON.stringify(user));
       // return a user object based on email, removing the __v and password fields from the object
       return user;
     },
@@ -68,7 +67,6 @@ const resolvers = {
         { new: true }
       );
       // return the updated user object
-      console.log("updatedUser: ", JSON.stringify(updatedUser));
       return updatedUser;
     },
   },

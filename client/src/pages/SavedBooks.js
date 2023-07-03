@@ -5,11 +5,13 @@ import { GET_USER } from "../utils/queries";
 import { REMOVE_BOOK } from "../utils/mutations";
 import Auth from '../utils/auth';
 import { removeBookFromList } from '../utils/localStorage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp, faBookmark, faBook } from '@fortawesome/free-solid-svg-icons';
 import {
-  Button,
   Card,
   CardActions,
   CardContent,
+  Collapse,
   Snackbar,
   Typography
 } from '@material-ui/core';
@@ -31,7 +33,8 @@ const SavedBooks = () => {
         [userKey, setUserKey] = useState(null),
         apolloClient = useApolloClient(),
         cache = apolloClient.cache,
-        [showSnack, setShowSnack] = useState(false);
+        [showSnack, setShowSnack] = useState(false),
+        [expandedCardId, setExpandedCardId] = useState(null);
 
   // runs code in response to certain events or 
   // conditions, such as when the component mounts,
@@ -48,6 +51,7 @@ const SavedBooks = () => {
       if (savedUserData) {
         // loop through the object to get the id
         for (let [user, _] of Object.entries(savedUserData)) {
+          console.log(_);
           // if key includes user, get the value of the id
           if (user.includes("User")) {
             setUserKey(user);
@@ -84,7 +88,7 @@ const SavedBooks = () => {
         }
       }
     }
-  }, [data, userKey]);
+  }, [data, userKey, apolloClient]);
 
   // remove a selected book from the savedBooks array
   const removeBookFromSavedBooks = async (bookId) => {
@@ -139,6 +143,12 @@ const SavedBooks = () => {
     return <div>Error: {error.message}</div>;
   }
 
+  // handles card expand/collapse
+  const handleCardExpand = (bookId) => {
+    // update the expandedCardId state based on the clicked bookId
+    setExpandedCardId((prevCardId) => (prevCardId === bookId ? null : bookId));
+  };
+
   return (
     <>
       {Auth.loggedIn() ? (
@@ -146,6 +156,7 @@ const SavedBooks = () => {
           <div className='hero pt-5'>
             <div className="container p-4">
               <Typography variant="h3">Viewing saved books!</Typography>
+              <FontAwesomeIcon icon={faBook} aria-label="A book" size="6x" className="hero-book" />
             </div>
           </div>
           <div className='container p-4'>
@@ -153,24 +164,43 @@ const SavedBooks = () => {
               <>
                 <Typography variant="h4">You have {userData.savedBooks.length} saved {userData.savedBooks.length === 1 ? 'book' : 'books'}:</Typography>
                 <div className='card-wrapper'>
-                  {userData && userData.savedBooks.map((book, index) => {
+                {userData &&
+                  userData.savedBooks.map((book) => {
+                    const isCardExpanded = expandedCardId === book.bookId;
                     return (
-                      <Card sx={{ maxWidth: 345 }} key={index} className='card-wrapper-item'>
-                        {book.image ? <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' /> : null}
+                      <Card sx={{ maxWidth: 345 }} key={book.bookId} className='card-wrapper-item'>
+                        {book.image ? (
+                          <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' />
+                        ) : null}
                         <CardContent>
-                          <Typography gutterBottom variant="h5" component="div">
+                          <Typography gutterBottom variant='h5' component='div'>
                             {book.title}
                           </Typography>
                           <p className='small'>Authors: {book.authors}</p>
-                          <Typography variant="body2">
-                            {book.description}
-                          </Typography>
                         </CardContent>
                         <CardActions>
-                          <Button className='btn-block btn-danger' onClick={() => removeBookFromSavedBooks(book.bookId)}>
-                            Remove
-                          </Button>
+                          <span className='card-icon-bookmark-btn' onClick={() => removeBookFromSavedBooks(book.bookId)}>
+                            <FontAwesomeIcon 
+                              icon={faBookmark} 
+                              aria-label={`${book.title} is saved`} 
+                              className="bookmark" />&nbsp;&nbsp;&nbsp;<strong>Remove</strong>
+                          </span>
+                          <span className='card-icon-btn'>
+                            <FontAwesomeIcon
+                              icon={isCardExpanded ? faChevronUp : faChevronDown}
+                              onClick={() => handleCardExpand(book.bookId)}
+                              aria-expanded={isCardExpanded}
+                              aria-label={isCardExpanded ? 'Hide' : 'Show'}
+                            />
+                          </span>
                         </CardActions>
+                        {expandedCardId === book.bookId && (
+                          <Collapse in={isCardExpanded} timeout='auto' id={book.bookId} unmountOnExit>
+                            <CardContent>
+                              <Typography paragraph>{book.description}</Typography>
+                            </CardContent>
+                          </Collapse>
+                        )}
                       </Card>
                     );
                   })}

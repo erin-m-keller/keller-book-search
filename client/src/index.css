@@ -53,9 +53,29 @@ form {
   flex-wrap: wrap;
   justify-content: space-between;
 }
+.card-wrapper-item {
+  position: relative;
+  align-self: flex-start;
+  min-height: 25em;
+}
 .card-wrapper > .card-wrapper-item {
   flex-basis: 100%;
   margin: 10px;
+}
+.card-icon-btn {
+  position: absolute;
+  bottom: 0.5em;
+  right: 1em;
+  height: 2em;
+  width: 2em;
+  text-align: center;
+}
+.card-icon-btn:hover,
+.card-icon-bookmark-btn:hover {
+  cursor: pointer;
+}
+.card-icon-bookmark-btn {
+  
 }
 .close-btn {
   height: 2em;
@@ -74,6 +94,15 @@ form {
   background-color: #FBAB7E;
   background-image: linear-gradient(62deg, #FBAB7E 0%, #F7CE68 100%); 
   min-height: 20em; 
+  position: relative;
+}
+.hero-book {
+  position: absolute;
+  top: 0.25em;
+  right: 0.25em;
+}
+.hero-book path {
+  fill: rgba(245,0,87,1); 
 }
 .navigation-link {
   display: inline-flex;
@@ -112,6 +141,9 @@ form {
 }
 .navigation-icon path {
   fill: rgba(255,255,255,0.7);
+}
+.bookmark path {
+  fill: #f50157;
 }
 @media (min-width: 576px) {
   .container {
@@ -162,6 +194,9 @@ form {
 }
 .MuiCard-root {
   margin-top: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 .css-hyum1k-MuiToolbar-root {
   position: relative;
@@ -237,4 +272,12 @@ form {
 }
 .MuiFilledInput-underline:after {
   border-bottom: 2px solid #f50157 !important; 
+}
+.MuiTypography-h3 {
+  font-size: 2em !important;
+}
+@media screen and (min-width:768px) {
+  .MuiTypography-h3 {
+    font-size: 3em !important;
+  }
 }

@@ -4,7 +4,7 @@ import SignUpForm from './SignupForm';
 import LoginForm from './LoginForm';
 import Auth from '../utils/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBook, faBookmark, faRightFromBracket, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faBookOpenReader, faBookmark, faRightFromBracket, faSearch } from '@fortawesome/free-solid-svg-icons';
 import {
   AppBar,
   Box,
@@ -43,7 +43,7 @@ const AppNavbar = () => {
       <AppBar color="secondary">
         <Toolbar>
           <IconButton edge="start" aria-label="menu">
-            <FontAwesomeIcon icon={faBook} className="navigation-icon" />
+            <FontAwesomeIcon icon={faBookOpenReader} className="navigation-icon" />
           </IconButton>
           <Typography variant="h6">
             Google Book Search

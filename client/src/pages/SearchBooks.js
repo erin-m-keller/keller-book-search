@@ -4,12 +4,15 @@ import { useMutation } from "@apollo/client";
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
 import { saveBookList, getBookList } from '../utils/localStorage';
-import { Alert } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp, faBookmark as faBookmarkFilled, faBook } from '@fortawesome/free-solid-svg-icons';
+import { faBookmark } from '@fortawesome/free-regular-svg-icons';
 import {
   Button,
   Card,
   CardActions,
   CardContent,
+  Collapse,
   FormControl,
   Snackbar,
   TextField,
@@ -27,7 +30,8 @@ const SearchBooks = () => {
         [searchInput, setSearchInput] = useState(''),
         [saveBook, { error }] = useMutation(SAVE_BOOK),
         [bookList, setBookList] = useState(getBookList()),
-        [showSnack, setShowSnack] = useState(false);
+        [showSnack, setShowSnack] = useState(false),
+        [expandedCardId, setExpandedCardId] = useState(null);
 
   // runs code in response to certain events or 
   // conditions, such as when the component mounts,
@@ -35,8 +39,6 @@ const SearchBooks = () => {
   useEffect(() => {
     saveBookList(bookList);
   });
-
-  
 
   // handle form submission event
   const handleFormSubmit = async (event) => {
@@ -103,6 +105,12 @@ const SearchBooks = () => {
     }
   }
 
+  // handles card expand/collapse
+  const handleCardExpand = (bookId) => {
+    // update the expandedCardId state based on the clicked bookId
+    setExpandedCardId((prevCardId) => (prevCardId === bookId ? null : bookId));
+  };
+
   return (
     <>
       <div className='hero pt-5'>
@@ -124,6 +132,7 @@ const SearchBooks = () => {
               Submit
             </Button>
           </FormControl>
+          <FontAwesomeIcon icon={faBook} aria-label="A book" size="6x" className="hero-book" />
         </div>
       </div>
       <div className="container p-4">
@@ -133,35 +142,49 @@ const SearchBooks = () => {
             : 'Search for a book to begin'}
         </h2>
         <div className='card-wrapper'>
-          {searchedBooks.map((book, index) => {
+          {searchedBooks.map((book) => {
+            const isCardExpanded = expandedCardId === book.bookId;
             return (
-              <Card sx={{ maxWidth: 345 }} className='card-wrapper-item' key={index}>
+              <Card sx={{ maxWidth: 345 }} className='card-wrapper-item' key={book.bookId}>
                 {book.image ? <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' /> : null}
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {book.title}
                   </Typography>
-                  <p className='small'>Authors: {book.authors}</p>
-                  <Typography variant="body2">
-                    {book.description}
-                  </Typography>
+                  <Typography paragraph className='small'>Authors: {book.authors}</Typography>
                 </CardContent>
                 <CardActions>
                 {Auth.loggedIn() && bookList?.some((savedBookId) => savedBookId === book.bookId) ? (
-                  <Alert variant="filled" severity="error">
-                    Already saved!
-                  </Alert>
+                  <>
+                    <FontAwesomeIcon 
+                      icon={faBookmarkFilled} 
+                      aria-label={`${book.title} is saved`} 
+                      className="bookmark" />&nbsp;&nbsp;&nbsp;<strong>Saved!</strong>
+                  </>
                 ) : (
-                  <Button
-                    size="small"
-                    disabled={bookList?.some((savedBookId) => savedBookId === book.bookId)}
-                    className="btn-block btn-info"
-                    onClick={() => handleSaveBook(book.bookId)}
-                  >
-                    Save
-                  </Button>
+                  <span className='card-icon-bookmark-btn' onClick={() => handleSaveBook(book.bookId)}>
+                    <FontAwesomeIcon 
+                      icon={faBookmark} 
+                      aria-label={`${book.title} is saved`} 
+                      className="bookmark" />&nbsp;&nbsp;&nbsp;<strong>Save</strong>
+                  </span>
                 )}
+                <span className='card-icon-btn'>
+                  <FontAwesomeIcon
+                    icon={isCardExpanded ? faChevronUp : faChevronDown}
+                    onClick={() => handleCardExpand(book.bookId)}
+                    aria-expanded={isCardExpanded}
+                    aria-label={isCardExpanded ? 'Hide' : 'Show'}
+                  />
+                </span>
               </CardActions>
+              {expandedCardId === book.bookId && (
+                <Collapse in={isCardExpanded} timeout='auto' id={book.bookId} unmountOnExit>
+                  <CardContent>
+                    <Typography paragraph>{book.description}</Typography>
+                  </CardContent>
+                </Collapse>
+              )}
             </Card>
             );
           })}
