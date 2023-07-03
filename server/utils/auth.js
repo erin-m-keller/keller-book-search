@@ -3,10 +3,12 @@ const jwt = require("jsonwebtoken"),
       secret = process.env.SECRET,
       expiration = "5h";
 
+      console.log("secret: ", secret);
+
 module.exports = {
   // function to sign a token with the provided payload, secret, and expiration
   generateAuthToken: ({ username, email, _id }) => 
-    jwt.sign({ data: { username, email, _id } }, process.env.SECRET_KEY, { expiresIn: expiration }), 
+    jwt.sign({ data: { username, email, _id } }, secret, { expiresIn: expiration }), 
   // function to extract and verify a token from the request, assigning the decoded 
   // user data to the req.user property if the token is valid
   authMiddleware: ({ req }) => {
