@@ -10,9 +10,9 @@ export const saveBookList = (bookIdArr) =>
     : localStorage.removeItem('activeUserBookList');
 
 // remove the specified book ID from the saved book IDs in localStorage
-export const removeBookId = (bookId) => {
-  // retrieve the saved book IDs from localStorage or initialize as null if it does not exist
-  const savedBookIds = JSON.parse(localStorage.getItem('activeUserBookList') || 'null');
+export const removeBookFromList = (bookId) => {
+  // retrieve the saved book IDs from localStorage
+  const savedBookIds = JSON.parse(localStorage.getItem('activeUserBookList'));
   // if savedBookIds is null, return false
   if (!savedBookIds) return false;
   // filter out the specified book ID from the saved book IDs array

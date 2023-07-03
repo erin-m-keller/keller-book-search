@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import { persistCache } from 'apollo-cache-persist';
 import SearchBooks from './pages/SearchBooks';
@@ -64,16 +64,16 @@ function App() {
     <ThemeProvider theme={theme}>
       <ApolloProvider client={client}>
         <Router>
-          {/* <ErrorBoundary> */}
+          <ErrorBoundary>
             <>
               <Navbar />
               <Switch>
                 <Route exact path='/' component={SearchBooks} />
-                <Route exact path='/saved' component={SavedBooks} />
+                <Route exact path='/book-list' component={SavedBooks} />
                 <Route render={() => <h1 className='display-2'>Wrong page!</h1>} />
               </Switch>
             </>
-          {/* </ErrorBoundary> */}
+          </ErrorBoundary>
         </Router>
       </ApolloProvider>
     </ThemeProvider>

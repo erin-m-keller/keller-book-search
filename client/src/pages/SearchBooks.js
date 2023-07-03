@@ -10,7 +10,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardMedia,
   FormControl,
   Snackbar,
   TextField,
@@ -36,6 +35,8 @@ const SearchBooks = () => {
   useEffect(() => {
     saveBookList(bookList);
   });
+
+  
 
   // handle form submission event
   const handleFormSubmit = async (event) => {
@@ -105,7 +106,7 @@ const SearchBooks = () => {
   return (
     <>
       <div className='hero pt-5'>
-        <div className="container">
+        <div className="container p-4">
           <Typography variant="h3">Search for Books!</Typography>
           <FormControl>
             <TextField 
@@ -116,7 +117,7 @@ const SearchBooks = () => {
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               type='text'
-              size='lg'
+              size='medium'
               placeholder='Search for a book'
             />
             <Button onClick={handleFormSubmit} disabled={!searchInput}>
@@ -125,28 +126,23 @@ const SearchBooks = () => {
           </FormControl>
         </div>
       </div>
-      <div className="container">
+      <div className="container p-4">
         <h2 className='pt-5'>
           {searchedBooks.length
             ? `Viewing ${searchedBooks.length} results:`
             : 'Search for a book to begin'}
         </h2>
         <div className='card-wrapper'>
-          {searchedBooks.map((book) => {
+          {searchedBooks.map((book, index) => {
             return (
-              <Card sx={{ maxWidth: 345 }} className='card-wrapper-item'>
-                <CardMedia
-                  sx={{ height: 140 }}
-                  image={book.image}
-                  title={`The cover for ${book.title}`}
-                />
-                <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' />
+              <Card sx={{ maxWidth: 345 }} className='card-wrapper-item' key={index}>
+                {book.image ? <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' /> : null}
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
                     {book.title}
                   </Typography>
                   <p className='small'>Authors: {book.authors}</p>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2">
                     {book.description}
                   </Typography>
                 </CardContent>

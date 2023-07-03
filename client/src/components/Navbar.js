@@ -58,7 +58,7 @@ const AppNavbar = () => {
             {Auth.loggedIn() ? (
               <>
                 <div className="navigation-link">
-                  <Link to='/saved'><FontAwesomeIcon icon={faBookmark} />&nbsp;Saved Books</Link>
+                  <Link to='/book-list'><FontAwesomeIcon icon={faBookmark} />&nbsp;Saved Books</Link>
                 </div>
                 <div className="navigation-link">
                   <div onClick={Auth.logout}><FontAwesomeIcon icon={faRightFromBracket} />&nbsp;Logout</div>

@@ -4,13 +4,15 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { GET_USER } from "../utils/queries";
 import { REMOVE_BOOK } from "../utils/mutations";
 import Auth from '../utils/auth';
+import { removeBookFromList } from '../utils/localStorage';
 import {
-  Container,
-  Card,
   Button,
-  Row,
-  Col
-} from 'react-bootstrap';
+  Card,
+  CardActions,
+  CardContent,
+  Snackbar,
+  Typography
+} from '@material-ui/core';
 
 const SavedBooks = () => {
   // initialize variables
@@ -28,7 +30,8 @@ const SavedBooks = () => {
         [userData, setUserData] = useState(null),
         [userKey, setUserKey] = useState(null),
         apolloClient = useApolloClient(),
-        cache = apolloClient.cache;
+        cache = apolloClient.cache,
+        [showSnack, setShowSnack] = useState(false);
 
   // runs code in response to certain events or 
   // conditions, such as when the component mounts,
@@ -86,41 +89,41 @@ const SavedBooks = () => {
   // remove a selected book from the savedBooks array
   const removeBookFromSavedBooks = async (bookId) => {
     // initialize variables
-    const token = Auth.getToken(); 
-    // if token doesn't exist, return false
+    const token = Auth.getToken();
     if (!token) return false;
+  
     try {
-      // remove the book using the ID
-      let updatedObj = await removeBook({
-        variables: { bookId }, // set the bookId for the mutation
-        context: headers, // set the authorization headers
+      await removeBook({
+        variables: { bookId },
+        context: headers,
       });
-      // read the cache data for the current user
-      const { getUser } = cache.readQuery({ query: GET_USER, variables: { email } });
-      // remove the book from the savedBooks array
+  
+      const updatedSavedBooks = userData.savedBooks.filter(
+        (book) => book.bookId !== bookId
+      );
+      const updatedBookCount = updatedSavedBooks.length > 0 ? updatedSavedBooks.length - 1 : 0;
+  
       const updatedUserData = {
-        ...getUser,
-        savedBooks: getUser.savedBooks.filter(book => book.bookId !== bookId),
-        bookCount: getUser.savedBooks.length - 1
+        ...userData,
+        savedBooks: updatedSavedBooks,
+        bookCount: updatedBookCount,
       };
-      // generate the cache key for the user object
-      const cacheKey = cache.identify({ __typename: "User", _id: getUser._id });
+      const cacheKey = cache.identify(userData);
       // remove the user data from the cache
       cache.evict({ id: cacheKey });
-      // write the modified user data back to the cache
       cache.writeQuery({
         query: GET_USER,
         variables: { email },
         data: {
           getUser: {
-            ...updatedUserData
-          }
-        }
+            ...updatedUserData,
+          },
+        },
       });
-      // update the user data with the updated object
-      setUserData(updatedObj);
+      setUserData(updatedUserData);
+      removeBookFromList(bookId);
+      setShowSnack(true);
     } catch (err) {
-      // log any errors occurred during the mutation
       console.error(err);
     }
   };
@@ -142,45 +145,53 @@ const SavedBooks = () => {
     <>
       {Auth.loggedIn() ? (
         <>
-          <div fluid="true" className='text-light bg-dark p-5'>
-            <Container>
-              <h1>Viewing saved books!</h1>
-            </Container>
+          <div className='hero pt-5'>
+            <div className="container p-4">
+              <Typography variant="h3">Viewing saved books!</Typography>
+            </div>
           </div>
-          <Container>
-          {userData && userData.savedBooks ?
-            <div>
-              <h2 className='pt-5'>Viewing {userData.savedBooks.length} saved {userData.savedBooks.length === 1 ? 'book' : 'books'}:</h2>
-              <Row>
+          <div className='container p-4'>
+            {userData && userData.savedBooks ?
+              <>
+                <Typography variant="h4">You have {userData.savedBooks.length} saved {userData.savedBooks.length === 1 ? 'book' : 'books'}:</Typography>
                 {userData && userData.savedBooks.map((book, index) => {
                   return (
-                    <Col md="4" key={index}>
-                      <Card border='dark'>
-                        {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
-                        <Card.Body>
-                          <Card.Title>{book.title}</Card.Title>
-                          <p className='small'>Authors: {book.authors}</p>
-                          <Card.Text>{book.description}</Card.Text>
-                          <Button className='btn-block btn-danger' onClick={() => removeBookFromSavedBooks(book.bookId)}>
-                            Delete this Book!
-                          </Button>
-                        </Card.Body>
-                      </Card>
-                    </Col>
+                    <Card sx={{ maxWidth: 345 }} key={index} className='card-wrapper-item'>
+                      {book.image ? <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' /> : null}
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {book.title}
+                        </Typography>
+                        <p className='small'>Authors: {book.authors}</p>
+                        <Typography variant="body2">
+                          {book.description}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button className='btn-block btn-danger' onClick={() => removeBookFromSavedBooks(book.bookId)}>
+                          Remove
+                        </Button>
+                      </CardActions>
+                    </Card>
                   );
                 })}
-              </Row>
-            </div>
+              </>
             :
-            <h2 className='pt-5'>You have no saved books!</h2>
+              <Typography variant="h4">You have no saved books!</Typography>
             }
-          </Container>
+          </div>
+          <Snackbar
+            open={showSnack}
+            autoHideDuration={6000}
+            onClose={() => setShowSnack(false)}
+            message="Book removed from list!"
+          />
         </>
       ) : (
         <div fluid="true" className='text-light bg-dark p-5'>
-          <Container>
+          <div className='container p-4'>
             <h1>You must be logged in to view this page.</h1>
-          </Container>
+          </div>
         </div>
       )}
     </>
