@@ -9,6 +9,7 @@ The Book Search Engine is a web application that demonstrates the importance of 
   * [User Story](#user-story)
   * [Acceptance Criteria](#acceptance-criteria)
   * [Installation](#installation)
+  * [Heroku Deployment](#heroku-deployment)
   * [Screenshot](#screenshot)
   * [Deployed Page](#deployed-page)
   * [License](#license)
@@ -105,13 +106,18 @@ THEN I am logged out of the site and presented with a menu with the options
   > Application is available at: http://localhost:3000/  
   > GraphQL is available at: http://localhost:3001/graphql
 
+## Heroku Deployment
+
+Follow the deployment instructions found [here](./HEROKU.md).
+
 ## Screenshot
 
-// TODO: add screenshot
+![portfolioScreenshotDark](./assets/finished-product-1.png)
+![portfolioScreenshotDark](./assets/finished-product-2.png)
 
 ## Deployed page
 
-// TODO: add heroku link
+[Google Book Search](https://keller-book-search-f22cfc8fab39.herokuapp.com/)
 
 ## License
 

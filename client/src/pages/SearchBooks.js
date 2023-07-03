@@ -78,8 +78,6 @@ const SearchBooks = () => {
           token = Auth.loggedIn() ? Auth.getToken() : null;
     // if no token, return false
     if (!token) return false;
-    console.log("token: ", token);
-    console.log("headers: ", JSON.stringify(headers));
     try {
       // initialize variables
       const bookData = {
@@ -118,22 +116,24 @@ const SearchBooks = () => {
       <div className='hero pt-5'>
         <div className="container p-4">
           <Typography variant="h3">Search for Books!</Typography>
-          <FormControl>
-            <TextField 
-              id='filled-basic' 
-              label='Search' 
-              variant='filled' 
-              name='searchInput'
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              type='text'
-              size='medium'
-              placeholder='Search for a book'
-            />
-            <Button onClick={handleFormSubmit} disabled={!searchInput}>
-              Submit
-            </Button>
-          </FormControl>
+          <form onSubmit={handleFormSubmit}>
+            <FormControl>
+              <TextField 
+                id='filled-basic' 
+                label='Search' 
+                variant='filled' 
+                name='searchInput'
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                type='text'
+                size='medium'
+                placeholder='Search for a book'
+              />
+              <Button type="submit" disabled={!searchInput}>
+                Submit
+              </Button>
+            </FormControl>
+          </form>
           <FontAwesomeIcon icon={faBook} aria-label="A book" size="6x" className="hero-book" />
         </div>
       </div>
@@ -153,7 +153,7 @@ const SearchBooks = () => {
                   <Typography gutterBottom variant="h5" component="div">
                     {book.title}
                   </Typography>
-                  <Typography paragraph className='small'>Authors: {book.authors}</Typography>
+                  <p className='small author'>Authors: {book.authors}</p>
                 </CardContent>
                 <CardActions>
                 {Auth.loggedIn() && bookList?.some((savedBookId) => savedBookId === book.bookId) ? (
@@ -171,19 +171,24 @@ const SearchBooks = () => {
                       className="bookmark" />&nbsp;&nbsp;&nbsp;<strong>Save</strong>
                   </span>
                 )}
-                <span className='card-icon-btn'>
-                  <FontAwesomeIcon
-                    icon={isCardExpanded ? faChevronUp : faChevronDown}
-                    onClick={() => handleCardExpand(book.bookId)}
-                    aria-expanded={isCardExpanded}
-                    aria-label={isCardExpanded ? 'Hide' : 'Show'}
-                  />
-                </span>
+                {book.description && (
+                  <>
+                    <span className='description-text'>Description</span>
+                    <span className='card-icon-btn'>
+                      <FontAwesomeIcon
+                        icon={isCardExpanded ? faChevronUp : faChevronDown}
+                        onClick={() => handleCardExpand(book.bookId)}
+                        aria-expanded={isCardExpanded}
+                        aria-label={isCardExpanded ? 'Hide' : 'Show'}
+                      />
+                    </span>
+                  </>
+                )}
               </CardActions>
               {expandedCardId === book.bookId && book.description && (
                 <Collapse in={isCardExpanded} timeout='auto' id={book.bookId} unmountOnExit>
                   <CardContent>
-                    <Typography paragraph>{book.description}</Typography>
+                    <p className='desc'>{book.description}</p>
                   </CardContent>
                 </Collapse>
               )}

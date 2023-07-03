@@ -4,6 +4,11 @@
 
   > Ensure you are in the ROOT folder.
 
+  * Install the Heroku CLI, login, and then run the following command in the ROOT folder.
+  ```bash
+    heroku create -a app-name-here
+  ```
+
   * Create a new empty application on Heroku.
   ```bash
     heroku create -a app-name-here
@@ -16,8 +21,6 @@
 
   * Open the [MongoDB Atlas website](https://www.mongodb.com/cloud/atlas) and sign in to your account.
 
-  * Select 'Database' from the left menu.
-
   * Click 'Connect' next to the Cluster you want to connect to (or create a new Cluster).
 
   * Get the URL for the database.
@@ -26,7 +29,12 @@
 
   * Visit [Heroku](https://dashboard.heroku.com/apps), select your Application and then click 'Settings'.
 
-  * Scroll down to Config Vars, and add 'MONGODB_URI' as the key, with your Mongo Atlas URI as the value.
+  * Scroll down to Config Vars, and add 'MONGODB_URI' as the key, with your Mongo Atlas URI as the value. Then add any additional environment variables from your .env file.
+
+  * Once you have added the environment variables to Heroku, return to [MongoDB Atlas website](https://www.mongodb.com/cloud/atlas) and click 'Network Settings'. Click 'Add IP Address' and enter the following.
+  ```bash
+    0.0.0.0/0 
+  ```
 
   * Build latest production files.
   ```bash

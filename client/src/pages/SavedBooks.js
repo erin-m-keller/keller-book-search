@@ -176,7 +176,7 @@ const SavedBooks = () => {
                           <Typography gutterBottom variant='h5' component='div'>
                             {book.title}
                           </Typography>
-                          <p className='small'>Authors: {book.authors}</p>
+                          <p className='small author'>Authors: {book.authors}</p>
                         </CardContent>
                         <CardActions>
                           <span className='card-icon-bookmark-btn' onClick={() => removeBookFromSavedBooks(book.bookId)}>
@@ -197,7 +197,7 @@ const SavedBooks = () => {
                         {expandedCardId === book.bookId && book.description && (
                           <Collapse in={isCardExpanded} timeout='auto' id={book.bookId} unmountOnExit>
                             <CardContent>
-                              <Typography paragraph>{book.description}</Typography>
+                              <p className='desc'>{book.description}</p>
                             </CardContent>
                           </Collapse>
                         )}

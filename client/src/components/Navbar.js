@@ -50,7 +50,7 @@ const AppNavbar = () => {
           </Typography>
           <div className="navigation-link">
             <Link to='/'>
-              <FontAwesomeIcon icon={faSearch} />&nbsp;Search For Books
+              <FontAwesomeIcon icon={faSearch} />&nbsp;&nbsp;&nbsp;Search For Books
             </Link>
           </div>
           <div className="navigation-link">
@@ -58,14 +58,14 @@ const AppNavbar = () => {
             {Auth.loggedIn() ? (
               <>
                 <div className="navigation-link">
-                  <Link to='/book-list'><FontAwesomeIcon icon={faBookmark} />&nbsp;Saved Books</Link>
+                  <Link to='/book-list'><FontAwesomeIcon icon={faBookmark} />&nbsp;&nbsp;&nbsp;Saved Books</Link>
                 </div>
                 <div className="navigation-link">
-                  <div onClick={Auth.logout}><FontAwesomeIcon icon={faRightFromBracket} />&nbsp;Logout</div>
+                  <div onClick={Auth.logout}><FontAwesomeIcon icon={faRightFromBracket} />&nbsp;&nbsp;&nbsp;Logout</div>
                 </div>
               </>
             ) : (
-              <div onClick={handleOpen}><FontAwesomeIcon icon={faRightFromBracket} />&nbsp;Login/Sign Up</div>
+              <div onClick={handleOpen}><FontAwesomeIcon icon={faRightFromBracket} />&nbsp;&nbsp;&nbsp;Login/Sign Up</div>
             )}
           </div>
         </Toolbar>
