@@ -194,7 +194,7 @@ const SavedBooks = () => {
                             />
                           </span>
                         </CardActions>
-                        {expandedCardId === book.bookId && (
+                        {expandedCardId === book.bookId && book.description && (
                           <Collapse in={isCardExpanded} timeout='auto' id={book.bookId} unmountOnExit>
                             <CardContent>
                               <Typography paragraph>{book.description}</Typography>
