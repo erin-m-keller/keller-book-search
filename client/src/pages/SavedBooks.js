@@ -4,7 +4,6 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { GET_USER } from "../utils/queries";
 import { REMOVE_BOOK } from "../utils/mutations";
 import Auth from '../utils/auth';
-import { removeBookFromList } from '../utils/localStorage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp, faBookmark, faBook } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -89,6 +88,20 @@ const SavedBooks = () => {
       }
     }
   }, [data, userKey, apolloClient]);
+
+  // remove the specified book ID from the saved book IDs in localStorage
+  const removeBookFromList = (bookId) => {
+    // retrieve the saved book IDs from localStorage
+    const savedBookIds = JSON.parse(localStorage.getItem('activeUserBookList'));
+    // if savedBookIds is null, return false
+    if (!savedBookIds) return false;
+    // filter out the specified book ID from the saved book IDs array
+    const updatedSavedBookIds = savedBookIds.filter((savedBookId) => savedBookId !== bookId);
+    // save the updated saved book IDs array to localStorage as 'activeUserBookList'
+    localStorage.setItem('activeUserBookList', JSON.stringify(updatedSavedBookIds));
+    // return true to indicate successful removal
+    return true;
+  };
 
   // remove a selected book from the savedBooks array
   const removeBookFromSavedBooks = async (bookId) => {

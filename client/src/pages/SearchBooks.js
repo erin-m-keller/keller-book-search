@@ -3,7 +3,6 @@ import { SAVE_BOOK } from '../utils/mutations.js';
 import { useMutation } from "@apollo/client";
 import Auth from '../utils/auth';
 import { searchGoogleBooks } from '../utils/API';
-import { saveBookList, getBookList } from '../utils/localStorage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp, faBookmark as faBookmarkFilled, faBook } from '@fortawesome/free-solid-svg-icons';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons';
@@ -18,6 +17,17 @@ import {
   TextField,
   Typography
 } from '@material-ui/core';
+
+// retrieve the saved book IDs from localStorage or 
+// initialize with an empty array if it does not exist
+export const getBookList = () => JSON.parse(localStorage.getItem('activeUserBookList') || '[]');
+
+// save the provided book ID array to localStorage as 'activeUserBookList', 
+// or remove the item if the array is empty
+export const saveBookList = (bookIdArr) =>
+  bookIdArr.length
+    ? localStorage.setItem('activeUserBookList', JSON.stringify(bookIdArr))
+    : localStorage.removeItem('activeUserBookList');
 
 const SearchBooks = () => {
   // initialize variables
