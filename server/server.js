@@ -13,7 +13,8 @@ const express = require('express'),
         resolvers,
         context: authMiddleware
       }),
-      app = express();
+      app = express(),
+      path = require('path');
 
 // configuring Express to parse URL-encoded data
 app.use(express.urlencoded({ extended: false })); 
