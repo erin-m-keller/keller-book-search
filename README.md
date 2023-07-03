@@ -108,7 +108,7 @@ THEN I am logged out of the site and presented with a menu with the options
 
 ## Heroku Deployment
 
-Follow the deployment instructions found [here](./HEROKU.md).
+Follow the deployment instructions found [here](https://gist.github.com/erin-m-keller/dc64052000e99eff9c6c91796b011027).
 
 ## Screenshot
 
