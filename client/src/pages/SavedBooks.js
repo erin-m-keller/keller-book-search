@@ -162,7 +162,7 @@ const SavedBooks = () => {
           <div className='container p-4'>
             {userData && userData.savedBooks ?
               <>
-                <Typography variant="h4">You have {userData.savedBooks.length} saved {userData.savedBooks.length === 1 ? 'book' : 'books'}:</Typography>
+                <h2>You have {userData.savedBooks.length} saved {userData.savedBooks.length === 1 ? 'book' : 'books'}:</h2>
                 <div className='card-wrapper'>
                 {userData &&
                   userData.savedBooks.map((book) => {
