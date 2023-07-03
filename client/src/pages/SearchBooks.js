@@ -78,6 +78,8 @@ const SearchBooks = () => {
           token = Auth.loggedIn() ? Auth.getToken() : null;
     // if no token, return false
     if (!token) return false;
+    console.log("token: ", token);
+    console.log("headers: ", JSON.stringify(headers));
     try {
       // initialize variables
       const bookData = {
