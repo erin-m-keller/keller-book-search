@@ -18,11 +18,15 @@
 
   * Select 'Database' from the left menu.
 
-  * Click 'Connect' next to the Cluster you want to connect to.
+  * Click 'Connect' next to the Cluster you want to connect to (or create a new Cluster).
 
   * Get the URL for the database.
 
   * Add the URL to the 'server/.env' file under the key: MONGODB_URI.
+
+  * Visit [Heroku](https://dashboard.heroku.com/apps), select your Application and then click 'Settings'.
+
+  * Scroll down to Config Vars, and add 'MONGODB_URI' as the key, with your Mongo Atlas URI as the value.
 
   * Build latest production files.
   ```bash
