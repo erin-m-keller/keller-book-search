@@ -1,7 +1,23 @@
+/************************************************
+*
+*   Main Stylesheet
+*   @version (1.0)
+*   @date (2023)
+*
+*   1.) GENERAL __________________ @general
+*   2.) MUI OVERRIDES ____________ @muiOverrides
+*
+************************************************/
+  
+/************************************************
+   GENERAL                              @general
+
+   The base styles for the page, text
+   and links. Includes utility class styles
+************************************************/
 :root {
   --font-main-style: "Roboto", Helvetica, Arial, sans-serif;
 }
-
 body {
   font-family: var(--font-main-style);
   background-color: #fff0cc;
@@ -73,9 +89,6 @@ form {
 .card-icon-btn:hover,
 .card-icon-bookmark-btn:hover {
   cursor: pointer;
-}
-.card-icon-bookmark-btn {
-  
 }
 .close-btn {
   height: 2em;
@@ -177,6 +190,11 @@ form {
   }
 }
 
+/************************************************
+   MUI OVERRIDES                    @muiOverrides
+
+   Style adjustments to base Material UI styles
+************************************************/
 .MuiBox-root {
   position: absolute;
   top: 50%;
