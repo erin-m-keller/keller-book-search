@@ -94,10 +94,6 @@ THEN I am logged out of the site and presented with a menu with the options
   ```
     git clone git@github.com:erin-m-keller/keller-book-search.git
   ```
-  * Set a configuration flag in npm to enable legacy peer dependency behavior.
-  ```bash
-    npm config set legacy-peer-deps true
-  ```
   * Install the dependencies.
   ```bash
     npm i 
