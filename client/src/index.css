@@ -50,14 +50,12 @@ form {
 }
 .card-wrapper {
   display: flex;
-  flex-flow: row wrap;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
-.card-wrapper-item {
-  flex-basis: 33%;
-  flex-grow: 1;
-  margin: 0.5% !important;
-  min-width: 240px;
-  padding: 15px;
+.card-wrapper > .card-wrapper-item {
+  flex-basis: 100%;
+  margin: 10px;
 }
 .close-btn {
   height: 2em;
@@ -124,6 +122,9 @@ form {
   .container {
     max-width: 720px;
   }
+  .card-wrapper > .card-wrapper-item {
+    flex-basis: 47%;
+  }
 }
 @media (min-width: 992px) {
   .container {
@@ -133,6 +134,9 @@ form {
 @media (min-width: 1200px) {
   .container {
     max-width: 1140px;
+  }
+  .card-wrapper > .card-wrapper-item {
+    flex: 1 0 31%;
   }
 }
 @media (min-width: 1400px) {

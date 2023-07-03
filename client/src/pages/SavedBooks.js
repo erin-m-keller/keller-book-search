@@ -90,41 +90,39 @@ const SavedBooks = () => {
   const removeBookFromSavedBooks = async (bookId) => {
     // initialize variables
     const token = Auth.getToken();
-    if (!token) return false;
+    // if no token, return false
+    if (!token) return false; 
   
     try {
-      await removeBook({
-        variables: { bookId },
-        context: headers,
-      });
-  
-      const updatedSavedBooks = userData.savedBooks.filter(
-        (book) => book.bookId !== bookId
-      );
-      const updatedBookCount = updatedSavedBooks.length > 0 ? updatedSavedBooks.length - 1 : 0;
-  
-      const updatedUserData = {
+      // call the `removeBook` function asynchronously with variables and headers
+      await removeBook({ variables: { bookId }, context: headers }); 
+      // create an updatedUserData object with the updated savedBooks and bookCount
+      const updatedUserData = { 
         ...userData,
-        savedBooks: updatedSavedBooks,
-        bookCount: updatedBookCount,
-      };
+         savedBooks: userData.savedBooks.filter((book) => book.bookId !== bookId), // filter out the book with the given bookId from the savedBooks array, 
+         bookCount: userData.savedBooks.length > 0 ? userData.savedBooks.length - 1 : 0 // update the book count based on the updated savedBooks array
+      }; 
+      // create a cache key using the data provided
       const cacheKey = cache.identify(userData);
       // remove the user data from the cache
-      cache.evict({ id: cacheKey });
-      cache.writeQuery({
-        query: GET_USER,
-        variables: { email },
-        data: {
-          getUser: {
-            ...updatedUserData,
-          },
-        },
-      });
+      cache.evict({ id: cacheKey }); 
+      // write the updatedUserData to the cache
+      cache.writeQuery({ 
+        query: GET_USER, 
+        variables: { email }, 
+        data: { 
+          getUser: { ...updatedUserData } 
+        } 
+      }); 
+      // update the user data with the updatedUserData
       setUserData(updatedUserData);
+      // remove the book from the list
       removeBookFromList(bookId);
-      setShowSnack(true);
+      // set showSnack to true to display a notification/snackbar 
+      setShowSnack(true); 
     } catch (err) {
-      console.error(err);
+      // log the error
+      console.error(err); 
     }
   };
 
@@ -154,27 +152,29 @@ const SavedBooks = () => {
             {userData && userData.savedBooks ?
               <>
                 <Typography variant="h4">You have {userData.savedBooks.length} saved {userData.savedBooks.length === 1 ? 'book' : 'books'}:</Typography>
-                {userData && userData.savedBooks.map((book, index) => {
-                  return (
-                    <Card sx={{ maxWidth: 345 }} key={index} className='card-wrapper-item'>
-                      {book.image ? <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' /> : null}
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {book.title}
-                        </Typography>
-                        <p className='small'>Authors: {book.authors}</p>
-                        <Typography variant="body2">
-                          {book.description}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Button className='btn-block btn-danger' onClick={() => removeBookFromSavedBooks(book.bookId)}>
-                          Remove
-                        </Button>
-                      </CardActions>
-                    </Card>
-                  );
-                })}
+                <div className='card-wrapper'>
+                  {userData && userData.savedBooks.map((book, index) => {
+                    return (
+                      <Card sx={{ maxWidth: 345 }} key={index} className='card-wrapper-item'>
+                        {book.image ? <img src={book.image} alt={`The cover for ${book.title}`} className='book-cover' /> : null}
+                        <CardContent>
+                          <Typography gutterBottom variant="h5" component="div">
+                            {book.title}
+                          </Typography>
+                          <p className='small'>Authors: {book.authors}</p>
+                          <Typography variant="body2">
+                            {book.description}
+                          </Typography>
+                        </CardContent>
+                        <CardActions>
+                          <Button className='btn-block btn-danger' onClick={() => removeBookFromSavedBooks(book.bookId)}>
+                            Remove
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    );
+                  })}
+                </div>
               </>
             :
               <Typography variant="h4">You have no saved books!</Typography>
