@@ -19,7 +19,7 @@
     npm run build
   ```
 
-  * Deploy the application.
+  * Add the MongoDB Atlas Addon to the Heroku application.
   ```bash
-    git push heroku main
+    heroku addons:create mongodbatlas:free
   ```
